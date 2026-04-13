@@ -997,14 +997,23 @@
         </div>
 
         <div class="nav-section-title">Manage</div>
-        <div class="nav-item" onclick="switchView('dashboard')">
+        <div class="nav-item" data-view="tasks" onclick="switchView('tasks')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
             Tasks
             <div class="badge">5</div>
         </div>
-        <div class="nav-item" onclick="switchView('dashboard')">
+        <div class="nav-item" data-view="reports" onclick="switchView('reports')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Reports
+        </div>
+        <div class="nav-item" data-view="calendar" onclick="switchView('calendar')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Calendar
+        </div>
+        <div class="nav-item" data-view="email" onclick="switchView('email')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Email
+            <div class="badge">3</div>
         </div>
         <div class="nav-item" onclick="switchView('dashboard')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -1294,7 +1303,116 @@
         <div class="pipeline-board" id="pipelineBoard"></div>
     </section>
 
+    <!-- ───── TASKS VIEW ───── -->
+    <section class="view" id="view-tasks">
+        <div class="view-header"><div><h1>Tasks</h1><p>Manage your team's tasks and to-dos</p></div>
+        <button class="btn btn-primary btn-sm" onclick="document.getElementById('addTaskForm').style.display=document.getElementById('addTaskForm').style.display==='none'?'flex':'none'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Task</button></div>
+        <div class="filter-bar" style="margin-bottom:20px">
+            <button class="filter-btn active" onclick="filterTasks('all',this)">All</button>
+            <button class="filter-btn" onclick="filterTasks('todo',this)">To Do</button>
+            <button class="filter-btn" onclick="filterTasks('progress',this)">In Progress</button>
+            <button class="filter-btn" onclick="filterTasks('done',this)">Done</button>
+        </div>
+        <div id="addTaskForm" style="display:none;gap:10px;margin-bottom:20px;background:var(--bg-secondary);padding:16px;border-radius:12px;border:1px solid var(--border);flex-wrap:wrap">
+            <input type="text" id="newTaskTitle" placeholder="Task title..." style="flex:2;min-width:200px;padding:10px 14px;background:var(--bg-primary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:.9rem">
+            <select id="newTaskPriority" style="padding:10px;background:var(--bg-primary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary)"><option value="High">High</option><option value="Medium" selected>Medium</option><option value="Low">Low</option></select>
+            <input type="date" id="newTaskDue" style="padding:10px;background:var(--bg-primary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary)">
+            <button onclick="addTask()" class="btn btn-primary btn-sm">Add</button>
+        </div>
+        <div id="tasksList" class="card" style="padding:0;overflow:hidden"></div>
+    </section>
+
+    <!-- ───── REPORTS VIEW ───── -->
+    <section class="view" id="view-reports">
+        <div class="view-header"><div><h1>Reports</h1><p>Sales analytics and team performance</p></div></div>
+        <div class="kpi-grid">
+            <div class="kpi-card"><div class="kpi-icon" style="background:rgba(59,130,246,.15);color:#3B82F6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="kpi-info"><span class="kpi-label">Best Month</span><span class="kpi-value">March</span><span class="kpi-change positive">$42,800 revenue</span></div></div>
+            <div class="kpi-card"><div class="kpi-icon" style="background:rgba(34,197,94,.15);color:#22C55E"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="kpi-info"><span class="kpi-label">Avg Deal Size</span><span class="kpi-value">$8,250</span><span class="kpi-change positive">+5% vs last quarter</span></div></div>
+            <div class="kpi-card"><div class="kpi-icon" style="background:rgba(245,158,11,.15);color:#F59E0B"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-info"><span class="kpi-label">Avg Sales Cycle</span><span class="kpi-value">32 days</span><span class="kpi-change negative">+3 days vs last quarter</span></div></div>
+            <div class="kpi-card"><div class="kpi-icon" style="background:rgba(168,85,247,.15);color:#A855F7"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="kpi-info"><span class="kpi-label">Top Source</span><span class="kpi-value">Referrals</span><span class="kpi-change positive">38% of leads</span></div></div>
+        </div>
+        <div class="chart-grid">
+            <div class="card"><div class="card-header"><h3>Monthly Revenue</h3></div><div class="chart-container"><canvas id="revenueBarChart"></canvas></div></div>
+            <div class="card"><div class="card-header"><h3>Deals Won vs Lost</h3></div><div class="chart-container"><canvas id="winLossChart"></canvas></div></div>
+        </div>
+        <div class="card" style="margin-top:24px"><div class="card-header"><h3>Conversion Funnel</h3></div>
+            <div style="padding:20px;display:flex;flex-direction:column;gap:14px" id="funnelBars">
+                <div style="display:flex;align-items:center;gap:14px"><span style="width:100px;font-size:.85rem;color:var(--text-secondary)">Leads</span><div style="flex:1;height:36px;background:var(--bg-primary);border-radius:8px;overflow:hidden"><div style="height:100%;width:100%;background:#3B82F6;border-radius:8px;display:flex;align-items:center;padding-left:12px;font-size:.8rem;font-weight:600">248</div></div></div>
+                <div style="display:flex;align-items:center;gap:14px"><span style="width:100px;font-size:.85rem;color:var(--text-secondary)">Qualified</span><div style="flex:1;height:36px;background:var(--bg-primary);border-radius:8px;overflow:hidden"><div style="height:100%;width:65%;background:#8B5CF6;border-radius:8px;display:flex;align-items:center;padding-left:12px;font-size:.8rem;font-weight:600">161</div></div></div>
+                <div style="display:flex;align-items:center;gap:14px"><span style="width:100px;font-size:.85rem;color:var(--text-secondary)">Proposal</span><div style="flex:1;height:36px;background:var(--bg-primary);border-radius:8px;overflow:hidden"><div style="height:100%;width:40%;background:#EC4899;border-radius:8px;display:flex;align-items:center;padding-left:12px;font-size:.8rem;font-weight:600">99</div></div></div>
+                <div style="display:flex;align-items:center;gap:14px"><span style="width:100px;font-size:.85rem;color:var(--text-secondary)">Negotiation</span><div style="flex:1;height:36px;background:var(--bg-primary);border-radius:8px;overflow:hidden"><div style="height:100%;width:25%;background:#F59E0B;border-radius:8px;display:flex;align-items:center;padding-left:12px;font-size:.8rem;font-weight:600">62</div></div></div>
+                <div style="display:flex;align-items:center;gap:14px"><span style="width:100px;font-size:.85rem;color:var(--text-secondary)">Won</span><div style="flex:1;height:36px;background:var(--bg-primary);border-radius:8px;overflow:hidden"><div style="height:100%;width:15%;background:#22C55E;border-radius:8px;display:flex;align-items:center;padding-left:12px;font-size:.8rem;font-weight:600">37</div></div></div>
+            </div>
+        </div>
+        <div class="card" style="margin-top:24px"><div class="card-header"><h3>Top Performers</h3></div>
+            <table class="data-table"><thead><tr><th>Salesperson</th><th>Deals Closed</th><th>Revenue</th><th>Win Rate</th></tr></thead>
+            <tbody>
+                <tr><td><div style="display:flex;align-items:center;gap:10px"><div class="avatar" style="background:#3B82F6">JD</div>James Donovan</div></td><td>18</td><td>$86,400</td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg-primary);border-radius:3px"><div style="height:100%;width:78%;background:#22C55E;border-radius:3px"></div></div><span style="font-size:.8rem;color:var(--text-secondary)">78%</span></div></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:10px"><div class="avatar" style="background:#A855F7">SM</div>Sarah Mitchell</div></td><td>15</td><td>$72,300</td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg-primary);border-radius:3px"><div style="height:100%;width:72%;background:#22C55E;border-radius:3px"></div></div><span style="font-size:.8rem;color:var(--text-secondary)">72%</span></div></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:10px"><div class="avatar" style="background:#F59E0B">MJ</div>Mike Johnson</div></td><td>12</td><td>$58,900</td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg-primary);border-radius:3px"><div style="height:100%;width:65%;background:#F59E0B;border-radius:3px"></div></div><span style="font-size:.8rem;color:var(--text-secondary)">65%</span></div></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:10px"><div class="avatar" style="background:#EC4899">LW</div>Lisa Wang</div></td><td>10</td><td>$45,200</td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg-primary);border-radius:3px"><div style="height:100%;width:60%;background:#F59E0B;border-radius:3px"></div></div><span style="font-size:.8rem;color:var(--text-secondary)">60%</span></div></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:10px"><div class="avatar" style="background:#22C55E">RK</div>Robert Kim</div></td><td>8</td><td>$38,600</td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg-primary);border-radius:3px"><div style="height:100%;width:55%;background:#EF4444;border-radius:3px"></div></div><span style="font-size:.8rem;color:var(--text-secondary)">55%</span></div></td></tr>
+            </tbody></table>
+        </div>
+    </section>
+
+    <!-- ───── CALENDAR VIEW ───── -->
+    <section class="view" id="view-calendar">
+        <div class="view-header"><div><h1>Calendar</h1><p>Schedule meetings and follow-ups</p></div>
+        <button class="btn btn-primary btn-sm" onclick="alert('Add Event modal coming soon!')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Event</button></div>
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border)">
+                <button onclick="changeMonth(-1)" style="background:var(--bg-primary);border:1px solid var(--border);color:var(--text-primary);width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:1rem">&lt;</button>
+                <h3 id="calendarMonth" style="font-size:1.1rem"></h3>
+                <button onclick="changeMonth(1)" style="background:var(--bg-primary);border:1px solid var(--border);color:var(--text-primary);width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:1rem">&gt;</button>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;padding:12px 24px;gap:4px">
+                <div style="font-size:.75rem;color:var(--text-muted);font-weight:600;padding:8px">SUN</div>
+                <div style="font-size:.75rem;color:var(--text-muted);font-weight:600;padding:8px">MON</div>
+                <div style="font-size:.75rem;color:var(--text-muted);font-weight:600;padding:8px">TUE</div>
+                <div style="font-size:.75rem;color:var(--text-muted);font-weight:600;padding:8px">WED</div>
+                <div style="font-size:.75rem;color:var(--text-muted);font-weight:600;padding:8px">THU</div>
+                <div style="font-size:.75rem;color:var(--text-muted);font-weight:600;padding:8px">FRI</div>
+                <div style="font-size:.75rem;color:var(--text-muted);font-weight:600;padding:8px">SAT</div>
+            </div>
+            <div id="calendarGrid" style="display:grid;grid-template-columns:repeat(7,1fr);padding:0 24px 24px;gap:4px"></div>
+        </div>
+        <div class="card" style="margin-top:24px" id="calendarEvents">
+            <div class="card-header"><h3>Upcoming Events</h3></div>
+            <div style="padding:16px;display:flex;flex-direction:column;gap:12px" id="eventsList"></div>
+        </div>
+    </section>
+
+    <!-- ───── EMAIL VIEW ───── -->
+    <section class="view" id="view-email">
+        <div class="view-header"><div><h1>Email</h1><p>Manage your communications</p></div>
+        <button class="btn btn-primary btn-sm" onclick="document.getElementById('composeModal').classList.add('show')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Compose</button></div>
+        <div class="filter-bar" style="margin-bottom:20px">
+            <button class="filter-btn active" onclick="filterEmails('inbox',this)">Inbox <span class="badge" style="position:static;margin-left:4px">8</span></button>
+            <button class="filter-btn" onclick="filterEmails('sent',this)">Sent</button>
+            <button class="filter-btn" onclick="filterEmails('draft',this)">Drafts</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:20px" id="emailLayout">
+            <div class="card" style="padding:0;overflow:hidden;max-height:600px;overflow-y:auto" id="emailList"></div>
+            <div class="card" id="emailDetail" style="padding:24px"><p style="color:var(--text-muted);text-align:center;padding:60px 0">Select an email to read</p></div>
+        </div>
+    </section>
+
 </main>
+
+<!-- ───── COMPOSE EMAIL MODAL ───── -->
+<div class="modal-overlay" id="composeModal">
+    <div class="modal">
+        <div class="modal-header"><h2>Compose Email</h2><button class="modal-close" onclick="document.getElementById('composeModal').classList.remove('show')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+        <div class="modal-body">
+            <div class="form-group"><label>To</label><input type="email" placeholder="recipient@email.com" style="width:100%;padding:10px 14px;background:var(--bg-primary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary)"></div>
+            <div class="form-group"><label>Subject</label><input type="text" placeholder="Email subject..." style="width:100%;padding:10px 14px;background:var(--bg-primary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary)"></div>
+            <div class="form-group"><label>Message</label><textarea rows="8" placeholder="Write your message..." style="width:100%;padding:14px;background:var(--bg-primary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);resize:vertical;font-family:inherit"></textarea></div>
+        </div>
+        <div class="modal-footer"><button class="btn btn-primary" onclick="document.getElementById('composeModal').classList.remove('show');alert('Email sent!')">Send Email</button></div>
+    </div>
+</div>
 
 <!-- ───── ADD CONTACT MODAL ───── -->
 <div class="modal-overlay" id="contactModal">
@@ -1817,6 +1935,209 @@ function initCharts() {
 // ═══════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════
+
+// ═══════════════════════════════════════
+// TASKS
+// ═══════════════════════════════════════
+const tasks = [
+    { id:1, title:'Follow up with Acme Corp proposal', assignee:'JD', priority:'High', due:'2026-04-14', status:'todo', done:false },
+    { id:2, title:'Prepare Q2 sales presentation', assignee:'SM', priority:'High', due:'2026-04-15', status:'progress', done:false },
+    { id:3, title:'Update CRM contact records', assignee:'MJ', priority:'Medium', due:'2026-04-16', status:'todo', done:false },
+    { id:4, title:'Send pricing to GlobalTech', assignee:'JD', priority:'High', due:'2026-04-13', status:'progress', done:false },
+    { id:5, title:'Schedule demo with Beta Inc', assignee:'LW', priority:'Medium', due:'2026-04-17', status:'todo', done:false },
+    { id:6, title:'Review contract terms - DataFlow', assignee:'SM', priority:'Low', due:'2026-04-18', status:'todo', done:false },
+    { id:7, title:'Onboard new client NexGen', assignee:'RK', priority:'Medium', due:'2026-04-20', status:'progress', done:false },
+    { id:8, title:'Cold call list - 20 prospects', assignee:'MJ', priority:'Low', due:'2026-04-19', status:'done', done:true },
+    { id:9, title:'Update pipeline forecast', assignee:'JD', priority:'Medium', due:'2026-04-14', status:'todo', done:false },
+    { id:10, title:'Client satisfaction survey', assignee:'LW', priority:'Low', due:'2026-04-21', status:'done', done:true },
+];
+let taskFilter = 'all';
+
+function renderTasks() {
+    const filtered = taskFilter === 'all' ? tasks : tasks.filter(t => t.status === (taskFilter === 'todo' ? 'todo' : taskFilter === 'progress' ? 'progress' : 'done'));
+    const list = document.getElementById('tasksList');
+    const priorityColors = { High:'#EF4444', Medium:'#F59E0B', Low:'#22C55E' };
+    const statusLabels = { todo:'To Do', progress:'In Progress', done:'Done' };
+    const statusColors = { todo:'#3B82F6', progress:'#F59E0B', done:'#22C55E' };
+    list.innerHTML = filtered.map(t => `
+        <div style="display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);${t.done?'opacity:0.5':''}">
+            <input type="checkbox" ${t.done?'checked':''} onchange="toggleTask(${t.id})" style="width:18px;height:18px;accent-color:#3B82F6;cursor:pointer">
+            <div style="flex:1;min-width:0"><div style="font-weight:500;${t.done?'text-decoration:line-through;color:var(--text-muted)':''}">${t.title}</div>
+            <div style="font-size:.8rem;color:var(--text-muted);margin-top:4px">Due: ${t.due}</div></div>
+            <span style="padding:4px 10px;border-radius:50px;font-size:.7rem;font-weight:600;background:${priorityColors[t.priority]}20;color:${priorityColors[t.priority]}">${t.priority}</span>
+            <span style="padding:4px 10px;border-radius:50px;font-size:.7rem;font-weight:600;background:${statusColors[t.status]}20;color:${statusColors[t.status]}">${statusLabels[t.status]}</span>
+            <div class="avatar" style="width:32px;height:32px;font-size:.7rem;background:#3B82F6">${t.assignee}</div>
+        </div>`).join('') || '<p style="padding:40px;text-align:center;color:var(--text-muted)">No tasks found</p>';
+}
+
+function toggleTask(id) {
+    const t = tasks.find(x=>x.id===id);
+    t.done = !t.done;
+    t.status = t.done ? 'done' : 'todo';
+    renderTasks();
+}
+
+function filterTasks(f, btn) {
+    taskFilter = f;
+    document.querySelectorAll('#view-tasks .filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderTasks();
+}
+
+function addTask() {
+    const title = document.getElementById('newTaskTitle').value.trim();
+    if (!title) return;
+    tasks.unshift({ id:Date.now(), title, assignee:'JD', priority:document.getElementById('newTaskPriority').value, due:document.getElementById('newTaskDue').value||'2026-04-20', status:'todo', done:false });
+    document.getElementById('newTaskTitle').value = '';
+    renderTasks();
+}
+
+// ═══════════════════════════════════════
+// REPORTS CHARTS
+// ═══════════════════════════════════════
+function initReportCharts() {
+    const barCtx = document.getElementById('revenueBarChart');
+    if (!barCtx) return;
+    new Chart(barCtx.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: ['Jan','Feb','Mar','Apr','May','Jun'],
+            datasets: [{ label:'Revenue', data: [28500,35200,42800,31400,38900,36700], backgroundColor: ['#3B82F6','#3B82F6','#22C55E','#3B82F6','#3B82F6','#3B82F6'], borderRadius: 8, barThickness: 40 }]
+        },
+        options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#1E293B', titleColor:'#F1F5F9', bodyColor:'#94A3B8', borderColor:'#334155', borderWidth:1, padding:12, cornerRadius:8, callbacks:{ label: ctx=>'$'+ctx.raw.toLocaleString() } } }, scales:{ x:{ grid:{display:false}, ticks:{color:'#64748B'} }, y:{ grid:{color:'rgba(51,65,85,0.3)'}, ticks:{color:'#64748B', callback:v=>'$'+(v/1000)+'k'} } } }
+    });
+
+    new Chart(document.getElementById('winLossChart').getContext('2d'), {
+        type: 'doughnut',
+        data: { labels:['Won','Lost','Pending'], datasets:[{ data:[37,12,21], backgroundColor:['#22C55E','#EF4444','#F59E0B'], borderColor:'#1E293B', borderWidth:3 }] },
+        options: { responsive:true, maintainAspectRatio:false, cutout:'60%', plugins:{ legend:{ position:'bottom', labels:{ color:'#94A3B8', usePointStyle:true, pointStyle:'circle', padding:16 } } } }
+    });
+}
+
+// ═══════════════════════════════════════
+// CALENDAR
+// ═══════════════════════════════════════
+let calendarDate = new Date(2026, 3, 1); // April 2026
+const calendarEvents = [
+    { date:'2026-04-03', title:'Demo with Acme Corp', time:'10:00 AM', type:'demo', color:'#3B82F6' },
+    { date:'2026-04-05', title:'Team standup', time:'9:00 AM', type:'meeting', color:'#A855F7' },
+    { date:'2026-04-07', title:'Follow up - GlobalTech', time:'2:00 PM', type:'followup', color:'#F59E0B' },
+    { date:'2026-04-10', title:'Q2 planning meeting', time:'11:00 AM', type:'meeting', color:'#A855F7' },
+    { date:'2026-04-12', title:'Client lunch - Beta Inc', time:'12:30 PM', type:'meeting', color:'#22C55E' },
+    { date:'2026-04-14', title:'Product demo - NexGen', time:'3:00 PM', type:'demo', color:'#3B82F6' },
+    { date:'2026-04-17', title:'Contract review call', time:'10:30 AM', type:'followup', color:'#F59E0B' },
+    { date:'2026-04-20', title:'Sales training workshop', time:'9:00 AM', type:'meeting', color:'#EC4899' },
+    { date:'2026-04-22', title:'Pipeline review', time:'4:00 PM', type:'meeting', color:'#A855F7' },
+    { date:'2026-04-25', title:'Follow up - DataFlow deal', time:'11:00 AM', type:'followup', color:'#F59E0B' },
+];
+
+function renderCalendar() {
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('calendarMonth').textContent = months[calendarDate.getMonth()] + ' ' + calendarDate.getFullYear();
+    const grid = document.getElementById('calendarGrid');
+    const firstDay = new Date(calendarDate.getFullYear(), calendarDate.getMonth(), 1).getDay();
+    const daysInMonth = new Date(calendarDate.getFullYear(), calendarDate.getMonth()+1, 0).getDate();
+    const today = new Date();
+    let html = '';
+    for (let i=0; i<firstDay; i++) html += '<div></div>';
+    for (let d=1; d<=daysInMonth; d++) {
+        const dateStr = `${calendarDate.getFullYear()}-${String(calendarDate.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const evts = calendarEvents.filter(e=>e.date===dateStr);
+        const isToday = today.getDate()===d && today.getMonth()===calendarDate.getMonth() && today.getFullYear()===calendarDate.getFullYear();
+        html += `<div onclick="showDayEvents('${dateStr}')" style="padding:10px 4px;text-align:center;border-radius:10px;cursor:pointer;font-size:.9rem;transition:all .2s;${isToday?'background:#3B82F6;color:#fff;font-weight:700':'color:var(--text-primary)'}" onmouseenter="this.style.background=this.style.background||'var(--bg-primary)'" onmouseleave="this.style.background='${isToday?'#3B82F6':''}'">
+            ${d}${evts.length?`<div style="display:flex;justify-content:center;gap:3px;margin-top:4px">${evts.map(e=>`<div style="width:6px;height:6px;border-radius:50%;background:${e.color}"></div>`).join('')}</div>`:''}
+        </div>`;
+    }
+    grid.innerHTML = html;
+    renderEvents();
+}
+
+function changeMonth(dir) { calendarDate.setMonth(calendarDate.getMonth()+dir); renderCalendar(); }
+
+function showDayEvents(dateStr) {
+    const evts = calendarEvents.filter(e=>e.date===dateStr);
+    const el = document.getElementById('eventsList');
+    if (evts.length===0) { el.innerHTML='<p style="color:var(--text-muted);text-align:center;padding:20px">No events on this date</p>'; return; }
+    el.innerHTML = evts.map(e=>`<div style="display:flex;align-items:center;gap:14px;padding:14px;background:var(--bg-primary);border-radius:10px;border-left:4px solid ${e.color}"><div style="flex:1"><div style="font-weight:600;font-size:.95rem">${e.title}</div><div style="font-size:.8rem;color:var(--text-muted);margin-top:2px">${e.time} - ${e.date}</div></div></div>`).join('');
+}
+
+function renderEvents() {
+    const upcoming = calendarEvents.slice(0,5);
+    document.getElementById('eventsList').innerHTML = upcoming.map(e=>`<div style="display:flex;align-items:center;gap:14px;padding:14px;background:var(--bg-primary);border-radius:10px;border-left:4px solid ${e.color}"><div style="flex:1"><div style="font-weight:600;font-size:.95rem">${e.title}</div><div style="font-size:.8rem;color:var(--text-muted);margin-top:2px">${e.time} - ${e.date}</div></div></div>`).join('');
+}
+
+// ═══════════════════════════════════════
+// EMAIL
+// ═══════════════════════════════════════
+const emails = {
+    inbox: [
+        { id:1, from:'Sarah Mitchell', avatar:'SM', color:'#A855F7', subject:'Q2 Sales Targets Update', preview:'Hi James, I\'ve updated the Q2 targets based on our discussion...', body:'Hi James,\n\nI\'ve updated the Q2 sales targets based on our discussion last Friday. The revised numbers are:\n\n- Team Target: $450K\n- Individual Target: $90K\n- New Accounts: 15\n\nPlease review and let me know if you have any concerns.\n\nBest regards,\nSarah', time:'10:32 AM', unread:true },
+        { id:2, from:'Mike Johnson', avatar:'MJ', color:'#F59E0B', subject:'Acme Corp - Contract Ready', preview:'The legal team has approved the Acme Corp contract. Ready for...', body:'Hey James,\n\nGreat news! The legal team has approved the Acme Corp contract. It\'s ready for final signatures.\n\nDeal value: $45,000\nContract term: 12 months\n\nCan you schedule a signing call for this week?\n\nThanks,\nMike', time:'9:15 AM', unread:true },
+        { id:3, from:'Lisa Wang', avatar:'LW', color:'#EC4899', subject:'New Lead - TechStart Inc', preview:'Just got off a call with TechStart Inc. They\'re interested in...', body:'Hi James,\n\nJust got off a call with TechStart Inc. They\'re interested in our enterprise plan. Key details:\n\n- Contact: David Chen, CTO\n- Company size: 200+ employees\n- Budget: $30-50K annually\n- Timeline: Q3 implementation\n\nI\'ve added them to the pipeline. Should I schedule a demo?\n\nLisa', time:'Yesterday', unread:true },
+        { id:4, from:'Robert Kim', avatar:'RK', color:'#22C55E', subject:'Weekly Pipeline Report', preview:'Attached is this week\'s pipeline report. Key highlights...', body:'Team,\n\nHere\'s this week\'s pipeline report highlights:\n\n- Total pipeline value: $380K\n- New deals added: 8\n- Deals closed: 3 ($52K)\n- Win rate: 62%\n\nStrongest performer: Sarah (4 deals closed)\nArea for improvement: Follow-up response time\n\nFull report attached.\n\nRobert', time:'Yesterday', unread:false },
+        { id:5, from:'GlobalTech Solutions', avatar:'GT', color:'#3B82F6', subject:'Partnership Opportunity', preview:'We\'d like to explore a strategic partnership with your...', body:'Dear James,\n\nWe\'ve been following your company\'s growth and would like to explore a strategic partnership opportunity.\n\nWe believe there are significant synergies between our platforms that could benefit both our customer bases.\n\nWould you be available for a 30-minute call next week to discuss?\n\nBest,\nAlex Rivera\nGlobalTech Solutions', time:'2 days ago', unread:false },
+        { id:6, from:'HR Department', avatar:'HR', color:'#64748B', subject:'Team Building Event - April 25', preview:'Mark your calendars! The annual team building event is...', body:'Hi Team,\n\nMark your calendars! Our annual team building event is scheduled for April 25th.\n\nVenue: Lakeside Resort\nTime: 10 AM - 6 PM\nActivities: Team challenges, BBQ lunch, awards ceremony\n\nPlease RSVP by April 18th.\n\nHR Team', time:'3 days ago', unread:false },
+        { id:7, from:'Beta Inc', avatar:'BI', color:'#F97316', subject:'Re: Product Demo Follow-up', preview:'Thank you for the excellent demo yesterday. Our team was...', body:'Hi James,\n\nThank you for the excellent demo yesterday. Our team was very impressed with the platform capabilities.\n\nWe have a few follow-up questions:\n1. Custom integration options?\n2. Data migration support?\n3. Enterprise SLA terms?\n\nLooking forward to your response.\n\nBest,\nJennifer Lee\nBeta Inc', time:'3 days ago', unread:false },
+        { id:8, from:'System', avatar:'SY', color:'#64748B', subject:'Monthly Report Generated', preview:'Your monthly CRM performance report for March 2026 is ready...', body:'Your monthly CRM performance report for March 2026 has been generated.\n\nKey metrics:\n- Revenue: $42,800 (highest this year)\n- New contacts: 34\n- Emails sent: 156\n- Meetings held: 28\n\nView the full report in your dashboard.', time:'4 days ago', unread:false },
+    ],
+    sent: [
+        { id:101, from:'You', avatar:'JD', color:'#3B82F6', subject:'Re: Partnership Opportunity', preview:'Hi Alex, thank you for reaching out. I\'d be happy to...', body:'Hi Alex,\n\nThank you for reaching out. I\'d be happy to discuss a potential partnership.\n\nI\'m available next Tuesday or Wednesday afternoon. Please send me a calendar invite.\n\nBest regards,\nJames', time:'2 days ago', unread:false },
+        { id:102, from:'You', avatar:'JD', color:'#3B82F6', subject:'Pricing Proposal - NexGen', preview:'Hi David, please find attached our enterprise pricing...', body:'Hi David,\n\nPlease find attached our enterprise pricing proposal for NexGen.\n\nHighlights:\n- Annual subscription: $38,000\n- Implementation support included\n- 24/7 priority support\n- Custom integrations\n\nLet me know if you\'d like to schedule a call to discuss.\n\nBest,\nJames', time:'3 days ago', unread:false },
+    ],
+    draft: [
+        { id:201, from:'Draft', avatar:'JD', color:'#64748B', subject:'Q2 Strategy Document', preview:'Outline for Q2 sales strategy including target markets...', body:'Q2 Sales Strategy Draft\n\n1. Target Markets\n- Healthcare\n- FinTech\n- E-commerce\n\n2. Goals\n- $500K pipeline\n- 20 new accounts\n- 65% win rate\n\n[DRAFT - IN PROGRESS]', time:'Draft', unread:false },
+    ]
+};
+let emailFolder = 'inbox';
+
+function renderEmails() {
+    const list = document.getElementById('emailList');
+    const folder = emails[emailFolder];
+    list.innerHTML = folder.map(e=>`
+        <div onclick="showEmail(${e.id})" style="display:flex;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .2s;${e.unread?'background:rgba(59,130,246,0.05)':''}" onmouseenter="this.style.background='var(--bg-primary)'" onmouseleave="this.style.background='${e.unread?'rgba(59,130,246,0.05)':''}'">
+            <div class="avatar" style="width:40px;height:40px;font-size:.75rem;background:${e.color};flex-shrink:0">${e.avatar}</div>
+            <div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-weight:${e.unread?'700':'500'};font-size:.9rem">${e.from}</span><span style="font-size:.75rem;color:var(--text-muted)">${e.time}</span></div>
+            <div style="font-size:.85rem;font-weight:${e.unread?'600':'400'};margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.subject}</div>
+            <div style="font-size:.8rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.preview}</div></div>
+            ${e.unread?'<div style="width:8px;height:8px;border-radius:50%;background:#3B82F6;margin-top:6px;flex-shrink:0"></div>':''}
+        </div>`).join('') || '<p style="padding:40px;text-align:center;color:var(--text-muted)">No emails</p>';
+}
+
+function showEmail(id) {
+    const all = [...emails.inbox,...emails.sent,...emails.draft];
+    const e = all.find(x=>x.id===id);
+    if (!e) return;
+    e.unread = false;
+    document.getElementById('emailDetail').innerHTML = `
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)">
+            <div class="avatar" style="width:48px;height:48px;font-size:.85rem;background:${e.color}">${e.avatar}</div>
+            <div style="flex:1"><div style="font-weight:700;font-size:1.05rem">${e.from}</div><div style="font-size:.8rem;color:var(--text-muted)">${e.time}</div></div>
+            <button onclick="alert('Reply sent!')" style="padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600">Reply</button>
+        </div>
+        <h2 style="font-size:1.2rem;margin-bottom:16px">${e.subject}</h2>
+        <div style="color:var(--text-secondary);line-height:1.8;white-space:pre-line;font-size:.95rem">${e.body}</div>`;
+    renderEmails();
+}
+
+function filterEmails(folder, btn) {
+    emailFolder = folder;
+    document.querySelectorAll('#view-email .filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderEmails();
+    document.getElementById('emailDetail').innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:60px 0">Select an email to read</p>';
+}
+
+// ═══════════════════════════════════════
+// ENHANCED SWITCH VIEW
+// ═══════════════════════════════════════
+const origSwitchView = switchView;
+switchView = function(view) {
+    origSwitchView(view);
+    if (view === 'tasks') renderTasks();
+    if (view === 'reports') setTimeout(initReportCharts, 100);
+    if (view === 'calendar') renderCalendar();
+    if (view === 'email') renderEmails();
+};
 
 document.addEventListener('DOMContentLoaded', () => {
     initCharts();
