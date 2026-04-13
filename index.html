@@ -183,17 +183,18 @@ tr:hover td{background:rgba(255,255,255,.02)}
 <div class="sb-label">Manage</div>
 <div class="sb-item" onclick="go('tasks')"><i class="fas fa-check-circle"></i>Tasks<span class="sb-badge">5</span></div>
 <div class="sb-item" onclick="go('reports')"><i class="fas fa-chart-bar"></i>Reports</div>
+<div class="sb-item" onclick="go('analytics')"><i class="fas fa-chart-pie"></i>Analytics</div>
 <div class="sb-item" onclick="go('calendar')"><i class="fas fa-calendar-alt"></i>Calendar</div>
 <div class="sb-item" onclick="go('email')"><i class="fas fa-envelope"></i>Email<span class="sb-badge">6</span></div>
 </div>
-<div class="sb-user"><div class="av" style="background:linear-gradient(135deg,var(--accent),var(--purple))">JD</div><div><div style="font-size:13px;font-weight:600">James Donovan</div><div style="font-size:11px;color:var(--dim)">Sales Manager</div></div></div>
+<div class="sb-user"><div class="av" style="background:linear-gradient(135deg,var(--accent),var(--purple))">TK</div><div><div style="font-size:13px;font-weight:600">Talha Khan</div><div style="font-size:11px;color:var(--dim)">Sales Manager</div></div></div>
 </nav>
 
 <main class="main">
 
 <!-- ══ DASHBOARD ══ -->
 <div class="view on" id="v-dashboard">
-<div class="pg-hd"><div><h1>Dashboard</h1><p>Welcome back, James. Here's your sales overview.</p></div></div>
+<div class="pg-hd"><div><h1>Dashboard</h1><p>Welcome back, Talha. Here's your sales overview.</p></div></div>
 <div class="g4">
 <div class="card kpi"><div class="kpi-ic" style="background:rgba(59,130,246,.12);color:var(--accent)"><i class="fas fa-dollar-sign"></i></div><div><div class="kpi-val">$124,500</div><div class="kpi-lbl">Total Revenue</div><div class="kpi-ch kpi-up"><i class="fas fa-arrow-up" style="font-size:9px"></i>12.5%</div></div></div>
 <div class="card kpi"><div class="kpi-ic" style="background:rgba(6,182,212,.12);color:var(--cyan)"><i class="fas fa-user-plus"></i></div><div><div class="kpi-val">48</div><div class="kpi-lbl">New Leads</div><div class="kpi-ch kpi-up"><i class="fas fa-arrow-up" style="font-size:9px"></i>8.2%</div></div></div>
@@ -203,6 +204,16 @@ tr:hover td{background:rgba(255,255,255,.02)}
 <div class="g7-5">
 <div class="card"><h3>Revenue Trend</h3><canvas id="chartRevenue" height="110"></canvas></div>
 <div class="card"><h3>Deals by Stage</h3><canvas id="chartDeals" height="160"></canvas></div>
+</div>
+<div class="g2">
+<div class="card"><h3>Win Rate by Month</h3><canvas id="chartWinRate" height="130"></canvas></div>
+<div class="card"><h3>Lead Sources</h3><canvas id="chartSources" height="130"></canvas></div>
+</div>
+<div class="g4">
+<div class="card" style="text-align:center"><div style="font-size:28px;font-weight:700;color:var(--accent)">$8,250</div><div style="font-size:12px;color:var(--dim);margin-top:4px">Avg Deal Size</div></div>
+<div class="card" style="text-align:center"><div style="font-size:28px;font-weight:700;color:var(--green)">32</div><div style="font-size:12px;color:var(--dim);margin-top:4px">Days Avg Sales Cycle</div></div>
+<div class="card" style="text-align:center"><div style="font-size:28px;font-weight:700;color:var(--amber)">156</div><div style="font-size:12px;color:var(--dim);margin-top:4px">Emails Sent This Month</div></div>
+<div class="card" style="text-align:center"><div style="font-size:28px;font-weight:700;color:var(--purple)">28</div><div style="font-size:12px;color:var(--dim);margin-top:4px">Meetings Held</div></div>
 </div>
 <div class="card"><h3>Recent Activity</h3>
 <div class="tl"><div class="tl-dot" style="background:var(--green)"></div><div><div class="tl-text"><b>Sarah Chen</b> closed deal with Acme Corp for <b>$28,500</b></div><div class="tl-time">2 hours ago</div></div></div>
@@ -266,10 +277,33 @@ tr:hover td{background:rgba(255,255,255,.02)}
 </div>
 <div class="card" style="margin-top:20px"><h3>Top Performers</h3>
 <table><thead><tr><th>Salesperson</th><th>Deals</th><th>Revenue</th><th>Win Rate</th></tr></thead><tbody>
-<tr><td><div class="td-name"><div class="av" style="background:var(--accent)">JD</div>James Donovan</div></td><td>18</td><td>$86,400</td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg);border-radius:3px"><div style="width:78%;height:100%;background:var(--green);border-radius:3px"></div></div><span style="font-size:12px;color:var(--muted)">78%</span></div></td></tr>
+<tr><td><div class="td-name"><div class="av" style="background:var(--accent)">TK</div>Talha Khan</div></td><td>18</td><td>$86,400</td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg);border-radius:3px"><div style="width:78%;height:100%;background:var(--green);border-radius:3px"></div></div><span style="font-size:12px;color:var(--muted)">78%</span></div></td></tr>
 <tr><td><div class="td-name"><div class="av" style="background:var(--purple)">SC</div>Sarah Chen</div></td><td>15</td><td>$72,300</td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg);border-radius:3px"><div style="width:72%;height:100%;background:var(--green);border-radius:3px"></div></div><span style="font-size:12px;color:var(--muted)">72%</span></div></td></tr>
 <tr><td><div class="td-name"><div class="av" style="background:var(--amber)">MT</div>Michael Torres</div></td><td>12</td><td>$58,900</td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg);border-radius:3px"><div style="width:65%;height:100%;background:var(--amber);border-radius:3px"></div></div><span style="font-size:12px;color:var(--muted)">65%</span></div></td></tr>
 <tr><td><div class="td-name"><div class="av" style="background:var(--pink)">EW</div>Emily Watson</div></td><td>10</td><td>$45,200</td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg);border-radius:3px"><div style="width:60%;height:100%;background:var(--amber);border-radius:3px"></div></div><span style="font-size:12px;color:var(--muted)">60%</span></div></td></tr>
+</tbody></table>
+</div>
+</div>
+
+<!-- ══ ANALYTICS ══ -->
+<div class="view" id="v-analytics">
+<div class="pg-hd"><div><h1>Analytics</h1><p>Deep dive into your sales data</p></div></div>
+<div class="g4">
+<div class="card"><div style="font-size:12px;color:var(--dim);margin-bottom:4px">Pipeline Value</div><div style="font-size:22px;font-weight:700">$513,300</div><div style="font-size:12px;color:var(--green)"><i class="fas fa-arrow-up" style="font-size:9px"></i> 22% vs last month</div></div>
+<div class="card"><div style="font-size:12px;color:var(--dim);margin-bottom:4px">Avg Response Time</div><div style="font-size:22px;font-weight:700">2.4 hrs</div><div style="font-size:12px;color:var(--green)"><i class="fas fa-arrow-down" style="font-size:9px"></i> 18% faster</div></div>
+<div class="card"><div style="font-size:12px;color:var(--dim);margin-bottom:4px">Customer LTV</div><div style="font-size:22px;font-weight:700">$42,600</div><div style="font-size:12px;color:var(--green)"><i class="fas fa-arrow-up" style="font-size:9px"></i> 8% growth</div></div>
+<div class="card"><div style="font-size:12px;color:var(--dim);margin-bottom:4px">Churn Rate</div><div style="font-size:22px;font-weight:700">3.2%</div><div style="font-size:12px;color:var(--green)"><i class="fas fa-arrow-down" style="font-size:9px"></i> Down from 4.1%</div></div>
+</div>
+<div class="g2">
+<div class="card"><h3>Revenue vs Target</h3><canvas id="chartRevTarget" height="140"></canvas></div>
+<div class="card"><h3>Deals by Industry</h3><canvas id="chartIndustry" height="140"></canvas></div>
+</div>
+<div class="card" style="margin-bottom:20px"><h3>Team Performance Comparison</h3><canvas id="chartTeam" height="120"></canvas></div>
+<div class="card"><h3>Sales Forecast (Next 3 Months)</h3>
+<table><thead><tr><th>Month</th><th>Projected Revenue</th><th>Target</th><th>Confidence</th><th>Progress</th></tr></thead><tbody>
+<tr><td style="font-weight:600;color:var(--text)">May 2026</td><td style="color:var(--accent);font-weight:600">$138,000</td><td>$130,000</td><td><span class="badge b-green">High</span></td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg);border-radius:3px"><div style="width:85%;height:100%;background:var(--green);border-radius:3px"></div></div><span style="font-size:12px;color:var(--muted)">85%</span></div></td></tr>
+<tr><td style="font-weight:600;color:var(--text)">June 2026</td><td style="color:var(--accent);font-weight:600">$145,000</td><td>$140,000</td><td><span class="badge b-amber">Medium</span></td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg);border-radius:3px"><div style="width:62%;height:100%;background:var(--amber);border-radius:3px"></div></div><span style="font-size:12px;color:var(--muted)">62%</span></div></td></tr>
+<tr><td style="font-weight:600;color:var(--text)">July 2026</td><td style="color:var(--accent);font-weight:600">$152,000</td><td>$150,000</td><td><span class="badge b-red">Low</span></td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg);border-radius:3px"><div style="width:38%;height:100%;background:var(--red);border-radius:3px"></div></div><span style="font-size:12px;color:var(--muted)">38%</span></div></td></tr>
 </tbody></table>
 </div>
 </div>
@@ -339,16 +373,16 @@ const pipeline={Lead:[],Qualified:[],Proposal:[],Negotiation:[],Won:[]};
 deals.forEach(d=>{if(pipeline[d.st])pipeline[d.st].push(d);});
 
 const tasks=[
-{id:1,t:'Follow up with Acme Corp contract',pr:'High',due:'Apr 13',who:'JD',st:'todo'},
+{id:1,t:'Follow up with Acme Corp contract',pr:'High',due:'Apr 13',who:'TK',st:'todo'},
 {id:2,t:'Prepare Q2 sales forecast',pr:'High',due:'Apr 14',who:'SC',st:'progress'},
 {id:3,t:'Send proposal to Quantum Solutions',pr:'Medium',due:'Apr 15',who:'EW',st:'todo'},
-{id:4,t:'Review pipeline stages',pr:'Low',due:'Apr 16',who:'JD',st:'done'},
+{id:4,t:'Review pipeline stages',pr:'Low',due:'Apr 16',who:'TK',st:'done'},
 {id:5,t:'Schedule NovaBright demo',pr:'High',due:'Apr 13',who:'MT',st:'todo'},
 {id:6,t:'Complete compliance docs',pr:'Medium',due:'Apr 17',who:'LP',st:'progress'},
 {id:7,t:'Update Meridian contacts',pr:'Low',due:'Apr 18',who:'DK',st:'done'},
 {id:8,t:'Analyze competitor pricing',pr:'Medium',due:'Apr 19',who:'SC',st:'progress'},
 {id:9,t:'Draft cold outreach template',pr:'Low',due:'Apr 20',who:'EW',st:'todo'},
-{id:10,t:'Onboard Atlas Dynamics',pr:'Medium',due:'Apr 14',who:'JD',st:'done'},
+{id:10,t:'Onboard Atlas Dynamics',pr:'Medium',due:'Apr 14',who:'TK',st:'done'},
 ];
 
 const calEvents=[
@@ -365,18 +399,18 @@ const calEvents=[
 
 const emailData={
 inbox:[
-{id:1,from:'Sarah Chen',subj:'Re: Enterprise Suite - Contract Ready',prev:'Hi James, the legal team approved the contract...',time:'10:30 AM',unread:true,body:'Hi James,\n\nThe legal team has approved the contract terms. We are ready to proceed with the signing this week.\n\nCould you send over the final SOW?\n\nBest,\nSarah Chen\nVP Operations, Acme Corp'},
-{id:2,from:'Michael Torres',subj:'Cloud Migration - Updated Timeline',prev:'Following our discussion, I revised the timeline...',time:'9:15 AM',unread:true,body:'James,\n\nFollowing our discussion, I revised the project timeline.\n\nKey changes:\n- Phase 1 moved to May 15\n- Added 2 weeks buffer for testing\n- UAT scheduled June 1-14\n\nMichael Torres'},
-{id:3,from:'Emily Watson',subj:'Proposal Questions',prev:'We reviewed the proposal and have questions about pricing...',time:'Yesterday',unread:true,body:'Hi James,\n\nWe have questions about the pricing:\n\n1. Is the volume discount from Year 1?\n2. What are SLA guarantees?\n3. Can we add users mid-contract?\n\nEmily Watson'},
-{id:4,from:'David Kim',subj:'Demo Scheduled Tuesday',prev:'Confirming our demo for Tuesday 2 PM...',time:'Yesterday',unread:false,body:'Hi James,\n\nConfirming the demo for Tuesday at 2:00 PM.\n\nOur team of 5 will attend:\n- David Kim (CTO)\n- Maria Lopez (VP Eng)\n- Tom Hardy (Architect)\n- Priya Patel (Security)\n- Alex Chen (DevOps)\n\nDavid Kim'},
-{id:5,from:'Lisa Park',subj:'Security Assessment Results',prev:'The security assessment is complete. No critical issues...',time:'Apr 9',unread:true,body:'James,\n\nSecurity assessment complete. No critical vulnerabilities found.\n\n3 medium-priority items need attention before proceeding.\n\nFull report attached.\n\nLisa Park'},
-{id:6,from:'Robert Johnson',subj:'Partnership Opportunity',prev:'I wanted to reach out about a potential partnership...',time:'Apr 8',unread:true,body:'Dear James,\n\nI wanted to reach out about a partnership between our organizations. Meridian Group is expanding and your CRM could be a great fit.\n\nOpen to a call next week?\n\nRobert Johnson\nCEO, Meridian Group'},
+{id:1,from:'Sarah Chen',subj:'Re: Enterprise Suite - Contract Ready',prev:'Hi Talha, the legal team approved the contract...',time:'10:30 AM',unread:true,body:'Hi Talha,\n\nThe legal team has approved the contract terms. We are ready to proceed with the signing this week.\n\nCould you send over the final SOW?\n\nBest,\nSarah Chen\nVP Operations, Acme Corp'},
+{id:2,from:'Michael Torres',subj:'Cloud Migration - Updated Timeline',prev:'Following our discussion, I revised the timeline...',time:'9:15 AM',unread:true,body:'Talha,\n\nFollowing our discussion, I revised the project timeline.\n\nKey changes:\n- Phase 1 moved to May 15\n- Added 2 weeks buffer for testing\n- UAT scheduled June 1-14\n\nMichael Torres'},
+{id:3,from:'Emily Watson',subj:'Proposal Questions',prev:'We reviewed the proposal and have questions about pricing...',time:'Yesterday',unread:true,body:'Hi Talha,\n\nWe have questions about the pricing:\n\n1. Is the volume discount from Year 1?\n2. What are SLA guarantees?\n3. Can we add users mid-contract?\n\nEmily Watson'},
+{id:4,from:'David Kim',subj:'Demo Scheduled Tuesday',prev:'Confirming our demo for Tuesday 2 PM...',time:'Yesterday',unread:false,body:'Hi Talha,\n\nConfirming the demo for Tuesday at 2:00 PM.\n\nOur team of 5 will attend:\n- David Kim (CTO)\n- Maria Lopez (VP Eng)\n- Tom Hardy (Architect)\n- Priya Patel (Security)\n- Alex Chen (DevOps)\n\nDavid Kim'},
+{id:5,from:'Lisa Park',subj:'Security Assessment Results',prev:'The security assessment is complete. No critical issues...',time:'Apr 9',unread:true,body:'Talha,\n\nSecurity assessment complete. No critical vulnerabilities found.\n\n3 medium-priority items need attention before proceeding.\n\nFull report attached.\n\nLisa Park'},
+{id:6,from:'Robert Johnson',subj:'Partnership Opportunity',prev:'I wanted to reach out about a potential partnership...',time:'Apr 8',unread:true,body:'Dear Talha,\n\nI wanted to reach out about a partnership between our organizations. Meridian Group is expanding and your CRM could be a great fit.\n\nOpen to a call next week?\n\nRobert Johnson\nCEO, Meridian Group'},
 {id:7,from:'Amanda Foster',subj:'Marketing Automation Setup',prev:'Thanks for the walkthrough. The team is excited...',time:'Apr 7',unread:true,body:'Thanks for the walkthrough yesterday.\n\nFollow-ups:\n- Marketo integration possible?\n- Onboarding timeline?\n- Dedicated support during setup?\n\nAmanda Foster\nCMO, Pinnacle Systems'},
-{id:8,from:'Kevin Zhang',subj:'AI Integration Discussion',prev:'Thinking about AI-powered lead scoring for your team...',time:'Apr 6',unread:false,body:'James,\n\nLuminary AI has models that could improve your conversion rates significantly.\n\nWould love a technical deep-dive with your engineering team.\n\nKevin Zhang\nCEO, Luminary AI'},
+{id:8,from:'Kevin Zhang',subj:'AI Integration Discussion',prev:'Thinking about AI-powered lead scoring for your team...',time:'Apr 6',unread:false,body:'Talha,\n\nLuminary AI has models that could improve your conversion rates significantly.\n\nWould love a technical deep-dive with your engineering team.\n\nKevin Zhang\nCEO, Luminary AI'},
 ],
 sent:[
-{id:101,from:'You',subj:'Re: Partnership Opportunity',prev:'Robert, happy to explore partnership...',time:'Apr 9',unread:false,body:'Robert,\n\nHappy to explore partnership opportunities.\n\nAvailable next Tuesday or Thursday.\n\nBest,\nJames Donovan'},
-{id:102,from:'You',subj:'Q1 Results Summary',prev:'Team, attached is Q1 performance summary...',time:'Apr 1',unread:false,body:'Team,\n\nQ1 highlights:\n- 18% revenue growth\n- 12 new clients\n- NPS improved to 72\n\nGreat work!\nJames'},
+{id:101,from:'You',subj:'Re: Partnership Opportunity',prev:'Robert, happy to explore partnership...',time:'Apr 9',unread:false,body:'Robert,\n\nHappy to explore partnership opportunities.\n\nAvailable next Tuesday or Thursday.\n\nBest,\nTalha Khan'},
+{id:102,from:'You',subj:'Q1 Results Summary',prev:'Team, attached is Q1 performance summary...',time:'Apr 1',unread:false,body:'Team,\n\nQ1 highlights:\n- 18% revenue growth\n- 12 new clients\n- NPS improved to 72\n\nGreat work!\nTalha'},
 ],
 drafts:[
 {id:201,from:'Draft',subj:'Follow-up: Vertex Analytics',prev:'Hi Rachel, following up on the consulting proposal...',time:'Draft',unread:false,body:'Hi Rachel,\n\nFollowing up on the consulting proposal we discussed.\n\n[Draft - continue writing...]'},
@@ -390,12 +424,13 @@ document.querySelectorAll('.sb-item').forEach(n=>n.classList.remove('active'));
 document.getElementById('v-'+view).classList.add('on');
 // highlight nav
 const items=document.querySelectorAll('.sb-item');
-const names=['dashboard','contacts','deals','pipeline','tasks','reports','calendar','email'];
+const names=['dashboard','contacts','deals','pipeline','tasks','reports','analytics','calendar','email'];
 const idx=names.indexOf(view);
 if(idx>=0&&items[idx])items[idx].classList.add('active');
 // init views
-if(view==='dashboard')initDashCharts();
+if(view==='dashboard'){initDashCharts();setTimeout(initDashExtraCharts,100);}
 if(view==='reports')initReportCharts();
+if(view==='analytics')initAnalyticsCharts();
 if(view==='calendar')renderCal();
 if(view==='email')renderEmailList('inbox');
 if(view==='pipeline')renderPipe();
@@ -463,7 +498,7 @@ return `<div class="task ${t.st==='done'?'done':''}"><input type="checkbox" ${t.
 }
 function setTaskTab(f,btn){taskFilter=f;document.querySelectorAll('#taskTabs .tab').forEach(t=>t.classList.remove('on'));btn.classList.add('on');renderTasks();}
 function togTask(id){const t=tasks.find(x=>x.id===id);t.st=t.st==='done'?'todo':'done';renderTasks();}
-function addTaskInline(){const title=prompt('Task title:');if(title)tasks.unshift({id:Date.now(),t:title,pr:'Medium',due:'Apr 20',who:'JD',st:'todo'});renderTasks();}
+function addTaskInline(){const title=prompt('Task title:');if(title)tasks.unshift({id:Date.now(),t:title,pr:'Medium',due:'Apr 20',who:'TK',st:'todo'});renderTasks();}
 
 // ══════ CALENDAR ══════
 let cM=3,cY=2026;
@@ -522,6 +557,24 @@ c3=new Chart(document.getElementById('chartMonthly'),{type:'bar',data:{labels:['
 c4=new Chart(document.getElementById('chartWonLost'),{type:'doughnut',data:{labels:['Won','Lost'],datasets:[{data:[32,12],backgroundColor:['#22c55e','#ef4444'],borderWidth:0}]},options:{responsive:true,cutout:'65%',plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',padding:14,usePointStyle:true}}}}});
 }
 
+// ══════ DASHBOARD EXTRA CHARTS ══════
+let c5,c6;
+function initDashExtraCharts(){
+if(c5)c5.destroy();if(c6)c6.destroy();
+c5=new Chart(document.getElementById('chartWinRate'),{type:'bar',data:{labels:['Jan','Feb','Mar','Apr','May','Jun'],datasets:[{label:'Win Rate %',data:[58,62,68,72,65,78],backgroundColor:'rgba(34,197,94,.5)',borderRadius:6,barPercentage:.5}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#64748b'}},y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b',callback:v=>v+'%'},max:100}}}});
+c6=new Chart(document.getElementById('chartSources'),{type:'polarArea',data:{labels:['Referrals','Website','LinkedIn','Cold Call','Events'],datasets:[{data:[38,25,18,12,7],backgroundColor:['rgba(59,130,246,.6)','rgba(34,197,94,.6)','rgba(168,85,247,.6)','rgba(245,158,11,.6)','rgba(236,72,153,.6)'],borderWidth:0}]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',padding:10,usePointStyle:true,font:{size:11}}}},scales:{r:{grid:{color:'rgba(255,255,255,.05)'},ticks:{display:false}}}}});
+}
+
+// ══════ ANALYTICS CHARTS ══════
+let c7,c8,c9;
+function initAnalyticsCharts(){
+if(c7)c7.destroy();if(c8)c8.destroy();if(c9)c9.destroy();
+const ctx7=document.getElementById('chartRevTarget').getContext('2d');
+c7=new Chart(ctx7,{type:'bar',data:{labels:['Jan','Feb','Mar','Apr','May','Jun'],datasets:[{label:'Revenue',data:[38000,42000,52400,48700,44200,46800],backgroundColor:'rgba(59,130,246,.7)',borderRadius:6,barPercentage:.4},{label:'Target',data:[35000,40000,45000,45000,45000,50000],backgroundColor:'rgba(255,255,255,.08)',borderRadius:6,barPercentage:.4}]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8',usePointStyle:true}}},scales:{x:{grid:{display:false},ticks:{color:'#64748b'}},y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b',callback:v=>'$'+v/1000+'k'}}}}});
+c8=new Chart(document.getElementById('chartIndustry'),{type:'doughnut',data:{labels:['Technology','Healthcare','Finance','Manufacturing','Retail','Other'],datasets:[{data:[35,20,18,12,10,5],backgroundColor:['#3b82f6','#22c55e','#f59e0b','#a855f7','#ec4899','#64748b'],borderWidth:0}]},options:{responsive:true,cutout:'60%',plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',padding:12,usePointStyle:true}}}}});
+c9=new Chart(document.getElementById('chartTeam'),{type:'bar',data:{labels:['Talha K.','Sarah C.','Michael T.','Emily W.','Lisa P.','David K.'],datasets:[{label:'Deals Closed',data:[18,15,12,10,8,6],backgroundColor:'rgba(59,130,246,.6)',borderRadius:4,barPercentage:.5},{label:'Revenue ($K)',data:[86,72,59,45,39,28],backgroundColor:'rgba(168,85,247,.5)',borderRadius:4,barPercentage:.5}]},options:{responsive:true,indexAxis:'y',plugins:{legend:{labels:{color:'#94a3b8',usePointStyle:true}}},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b'}},y:{grid:{display:false},ticks:{color:'#94a3b8'}}}}});
+}
+
 // ══════ INIT ══════
 renderContacts();
 renderDeals();
@@ -529,7 +582,7 @@ renderTasks();
 renderPipe();
 renderCal();
 renderEmailList('inbox');
-setTimeout(initDashCharts,50);
+setTimeout(()=>{initDashCharts();setTimeout(initDashExtraCharts,100);},50);
 </script>
 </body>
 </html>
