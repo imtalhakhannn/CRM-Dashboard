@@ -165,7 +165,10 @@ tr:hover td{background:rgba(255,255,255,.02)}
 
 /* Responsive */
 @media(max-width:1100px){.g4{grid-template-columns:1fr 1fr}.g7-5{grid-template-columns:1fr}.email-layout{grid-template-columns:1fr}}
-@media(max-width:768px){.sb{transform:translateX(-100%)}.sb.open{transform:translateX(0)}.main{margin-left:0}.g4{grid-template-columns:1fr 1fr}.pipe-cols{flex-direction:column}.pipe-col{min-width:auto}}
+.mob-menu{display:none;position:fixed;top:14px;left:14px;z-index:201;width:42px;height:42px;border-radius:10px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:16px;cursor:pointer;align-items:center;justify-content:center}
+.mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:98}
+.mob-overlay.on{display:block}
+@media(max-width:768px){.mob-menu{display:flex}.sb{transform:translateX(-100%);z-index:100}.sb.open{transform:translateX(0)}.main{margin-left:0;padding:70px 16px 20px}.g4{grid-template-columns:1fr 1fr}.pipe-cols{flex-direction:column}.pipe-col{min-width:auto}.email-layout{grid-template-columns:1fr}.task .task-meta{flex-wrap:wrap;gap:6px}}
 @media(max-width:480px){.g4,.g2{grid-template-columns:1fr}}
 </style>
 </head>
@@ -189,6 +192,10 @@ tr:hover td{background:rgba(255,255,255,.02)}
 </div>
 <div class="sb-user"><div class="av" style="background:linear-gradient(135deg,var(--accent),var(--purple))">TK</div><div><div style="font-size:13px;font-weight:600">Talha Khan</div><div style="font-size:11px;color:var(--dim)">Sales Manager</div></div></div>
 </nav>
+
+<!-- Mobile hamburger -->
+<button class="mob-menu" id="mobMenu" onclick="document.getElementById('sidebar').classList.toggle('open');document.getElementById('mobOverlay').classList.toggle('on')"><i class="fas fa-bars"></i></button>
+<div class="mob-overlay" id="mobOverlay" onclick="document.getElementById('sidebar').classList.remove('open');this.classList.remove('on')"></div>
 
 <main class="main">
 
@@ -427,6 +434,8 @@ const items=document.querySelectorAll('.sb-item');
 const names=['dashboard','contacts','deals','pipeline','tasks','reports','analytics','calendar','email'];
 const idx=names.indexOf(view);
 if(idx>=0&&items[idx])items[idx].classList.add('active');
+// close mobile sidebar
+if(window.innerWidth<768){document.getElementById('sidebar').classList.remove('open');document.getElementById('mobOverlay').classList.remove('on');}
 // init views
 if(view==='dashboard'){initDashCharts();setTimeout(initDashExtraCharts,100);}
 if(view==='reports')initReportCharts();
