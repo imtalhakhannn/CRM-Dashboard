@@ -1,2148 +1,1143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SalesCRM - Professional CRM Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-        :root {
-            --bg-primary: #0F172A;
-            --bg-secondary: #1E293B;
-            --bg-tertiary: #334155;
-            --accent: #3B82F6;
-            --accent-hover: #2563EB;
-            --accent-light: rgba(59,130,246,0.15);
-            --text-primary: #F1F5F9;
-            --text-secondary: #94A3B8;
-            --text-muted: #64748B;
-            --border: #334155;
-            --success: #22C55E;
-            --warning: #F59E0B;
-            --danger: #EF4444;
-            --purple: #A855F7;
-            --sidebar-width: 260px;
-            --topbar-height: 64px;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* ───────── SIDEBAR ───────── */
-        .sidebar {
-            position: fixed;
-            left: 0; top: 0;
-            width: var(--sidebar-width);
-            height: 100vh;
-            background: var(--bg-secondary);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            z-index: 100;
-            transition: transform .3s ease;
-        }
-
-        .sidebar-logo {
-            padding: 24px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .sidebar-logo .logo-icon {
-            width: 36px; height: 36px;
-            background: var(--accent);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 16px;
-        }
-
-        .sidebar-logo span {
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-
-        .sidebar-nav {
-            flex: 1;
-            padding: 16px 12px;
-            overflow-y: auto;
-        }
-
-        .nav-section-title {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            color: var(--text-muted);
-            padding: 8px 12px 8px;
-            margin-top: 8px;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 500;
-            transition: all .15s ease;
-            margin-bottom: 2px;
-            user-select: none;
-        }
-
-        .nav-item:hover {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-        }
-
-        .nav-item.active {
-            background: var(--accent-light);
-            color: var(--accent);
-        }
-
-        .nav-item svg {
-            width: 20px; height: 20px;
-            flex-shrink: 0;
-        }
-
-        .nav-item .badge {
-            margin-left: auto;
-            background: var(--accent);
-            color: #fff;
-            font-size: 11px;
-            padding: 2px 7px;
-            border-radius: 10px;
-            font-weight: 600;
-        }
-
-        .sidebar-user {
-            padding: 16px 16px;
-            border-top: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .sidebar-user-avatar {
-            width: 36px; height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), var(--purple));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .sidebar-user-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .sidebar-user-info .name {
-            font-size: 14px;
-            font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .sidebar-user-info .role {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        /* ───────── TOP BAR ───────── */
-        .topbar {
-            position: fixed;
-            top: 0;
-            left: var(--sidebar-width);
-            right: 0;
-            height: var(--topbar-height);
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            padding: 0 28px;
-            gap: 16px;
-            z-index: 90;
-        }
-
-        .mobile-toggle {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--text-primary);
-            cursor: pointer;
-            padding: 4px;
-        }
-
-        .topbar-search {
-            flex: 1;
-            max-width: 420px;
-            position: relative;
-        }
-
-        .topbar-search svg {
-            position: absolute;
-            left: 14px; top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            width: 18px; height: 18px;
-        }
-
-        .topbar-search input {
-            width: 100%;
-            padding: 9px 14px 9px 42px;
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 14px;
-            outline: none;
-            transition: border-color .15s;
-        }
-
-        .topbar-search input::placeholder { color: var(--text-muted); }
-        .topbar-search input:focus { border-color: var(--accent); }
-
-        .topbar-actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-left: auto;
-        }
-
-        .topbar-btn {
-            position: relative;
-            width: 40px; height: 40px;
-            border-radius: 8px;
-            border: none;
-            background: var(--bg-primary);
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all .15s;
-        }
-
-        .topbar-btn:hover {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-        }
-
-        .topbar-btn svg { width: 20px; height: 20px; }
-
-        .notif-badge {
-            position: absolute;
-            top: 6px; right: 6px;
-            width: 18px; height: 18px;
-            background: var(--danger);
-            border-radius: 50%;
-            font-size: 10px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid var(--bg-secondary);
-        }
-
-        .topbar-user {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 8px;
-            transition: background .15s;
-        }
-
-        .topbar-user:hover { background: var(--bg-tertiary); }
-
-        .topbar-user-avatar {
-            width: 34px; height: 34px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), var(--purple));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        .topbar-user-name {
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        /* ───────── MAIN CONTENT ───────── */
-        .main {
-            margin-left: var(--sidebar-width);
-            margin-top: var(--topbar-height);
-            padding: 28px;
-            min-height: calc(100vh - var(--topbar-height));
-        }
-
-        .view { display: none; }
-        .view.active { display: block; }
-
-        .page-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 28px;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .page-header h1 {
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-
-        .page-header p {
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-top: 4px;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all .15s;
-            font-family: inherit;
-        }
-
-        .btn svg { width: 18px; height: 18px; }
-        .btn-primary { background: var(--accent); color: #fff; }
-        .btn-primary:hover { background: var(--accent-hover); }
-        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); }
-        .btn-secondary:hover { background: #475569; }
-        .btn-sm { padding: 6px 14px; font-size: 13px; }
-        .btn-sm svg { width: 16px; height: 16px; }
-        .btn-danger { background: var(--danger); color: #fff; }
-
-        /* ───────── KPI CARDS ───────── */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-bottom: 28px;
-        }
-
-        .kpi-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 22px;
-        }
-
-        .kpi-card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 14px;
-        }
-
-        .kpi-card-header .label {
-            font-size: 13px;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        .kpi-icon {
-            width: 40px; height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .kpi-icon svg { width: 20px; height: 20px; }
-
-        .kpi-icon.blue { background: var(--accent-light); color: var(--accent); }
-        .kpi-icon.green { background: rgba(34,197,94,.15); color: var(--success); }
-        .kpi-icon.purple { background: rgba(168,85,247,.15); color: var(--purple); }
-        .kpi-icon.orange { background: rgba(245,158,11,.15); color: var(--warning); }
-
-        .kpi-value {
-            font-size: 28px;
-            font-weight: 700;
-            letter-spacing: -1px;
-        }
-
-        .kpi-change {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 13px;
-            font-weight: 600;
-            margin-top: 8px;
-        }
-
-        .kpi-change.up { color: var(--success); }
-        .kpi-change.down { color: var(--danger); }
-        .kpi-change span { color: var(--text-muted); font-weight: 400; }
-
-        /* ───────── CHARTS ───────── */
-        .charts-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
-            margin-bottom: 28px;
-        }
-
-        .chart-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 24px;
-        }
-
-        .chart-card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .chart-card-header h3 {
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .chart-tabs {
-            display: flex;
-            gap: 4px;
-            background: var(--bg-primary);
-            border-radius: 8px;
-            padding: 3px;
-        }
-
-        .chart-tab {
-            padding: 5px 14px;
-            border-radius: 6px;
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            font-family: inherit;
-            transition: all .15s;
-        }
-
-        .chart-tab.active {
-            background: var(--accent);
-            color: #fff;
-        }
-
-        .chart-wrapper {
-            position: relative;
-            height: 280px;
-        }
-
-        /* ───────── RECENT ACTIVITY ───────── */
-        .activity-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 24px;
-        }
-
-        .activity-card h3 {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-
-        .activity-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
-        }
-
-        .activity-item {
-            display: flex;
-            gap: 14px;
-            padding: 14px 0;
-            border-bottom: 1px solid var(--border);
-            position: relative;
-        }
-
-        .activity-item:last-child { border-bottom: none; }
-
-        .activity-dot {
-            width: 10px; height: 10px;
-            border-radius: 50%;
-            margin-top: 5px;
-            flex-shrink: 0;
-        }
-
-        .activity-dot.blue { background: var(--accent); }
-        .activity-dot.green { background: var(--success); }
-        .activity-dot.orange { background: var(--warning); }
-        .activity-dot.purple { background: var(--purple); }
-        .activity-dot.red { background: var(--danger); }
-
-        .activity-content {
-            flex: 1;
-        }
-
-        .activity-content p {
-            font-size: 14px;
-            color: var(--text-primary);
-            line-height: 1.5;
-        }
-
-        .activity-content p strong {
-            color: var(--accent);
-            font-weight: 600;
-        }
-
-        .activity-content .time {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        /* ───────── TABLE ───────── */
-        .table-toolbar {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .table-search {
-            position: relative;
-            flex: 1;
-            min-width: 200px;
-            max-width: 320px;
-        }
-
-        .table-search svg {
-            position: absolute;
-            left: 12px; top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            width: 16px; height: 16px;
-        }
-
-        .table-search input {
-            width: 100%;
-            padding: 9px 12px 9px 36px;
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 13px;
-            outline: none;
-            font-family: inherit;
-        }
-
-        .table-search input:focus { border-color: var(--accent); }
-
-        .filter-select {
-            padding: 9px 14px;
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 13px;
-            outline: none;
-            font-family: inherit;
-            cursor: pointer;
-        }
-
-        .data-table {
-            width: 100%;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .data-table table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .data-table th {
-            text-align: left;
-            padding: 14px 18px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: .8px;
-            color: var(--text-muted);
-            background: var(--bg-primary);
-            border-bottom: 1px solid var(--border);
-            white-space: nowrap;
-        }
-
-        .data-table td {
-            padding: 14px 18px;
-            font-size: 14px;
-            border-bottom: 1px solid var(--border);
-            white-space: nowrap;
-        }
-
-        .data-table tr:last-child td { border-bottom: none; }
-
-        .data-table tr:hover td {
-            background: rgba(59,130,246,.04);
-        }
-
-        .contact-name {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .contact-avatar {
-            width: 32px; height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 12px;
-            flex-shrink: 0;
-        }
-
-        .status-badge {
-            display: inline-flex;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .status-badge.active { background: rgba(34,197,94,.15); color: var(--success); }
-        .status-badge.inactive { background: rgba(100,116,139,.2); color: var(--text-muted); }
-        .status-badge.lead { background: var(--accent-light); color: var(--accent); }
-        .status-badge.prospect { background: rgba(168,85,247,.15); color: var(--purple); }
-
-        .action-btns {
-            display: flex;
-            gap: 6px;
-        }
-
-        .action-btn {
-            width: 32px; height: 32px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            background: transparent;
-            color: var(--text-muted);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all .15s;
-        }
-
-        .action-btn:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        .action-btn svg { width: 14px; height: 14px; }
-
-        /* ───────── PIPELINE / KANBAN ───────── */
-        .pipeline-board {
-            display: flex;
-            gap: 16px;
-            overflow-x: auto;
-            padding-bottom: 12px;
-            min-height: calc(100vh - 200px);
-        }
-
-        .pipeline-column {
-            min-width: 280px;
-            max-width: 300px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .pipeline-column-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 16px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 10px 10px 0 0;
-            border-bottom: 2px solid var(--accent);
-        }
-
-        .pipeline-column:nth-child(2) .pipeline-column-header { border-bottom-color: var(--purple); }
-        .pipeline-column:nth-child(3) .pipeline-column-header { border-bottom-color: var(--warning); }
-        .pipeline-column:nth-child(4) .pipeline-column-header { border-bottom-color: #F97316; }
-        .pipeline-column:nth-child(5) .pipeline-column-header { border-bottom-color: var(--success); }
-
-        .pipeline-column-header h4 {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .pipeline-column-header .count {
-            font-size: 12px;
-            background: var(--bg-primary);
-            padding: 2px 9px;
-            border-radius: 10px;
-            color: var(--text-secondary);
-            font-weight: 600;
-        }
-
-        .pipeline-cards {
-            flex: 1;
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-top: none;
-            border-radius: 0 0 10px 10px;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            min-height: 200px;
-        }
-
-        .pipeline-cards.drag-over {
-            background: rgba(59,130,246,.05);
-            border-color: var(--accent);
-        }
-
-        .deal-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 16px;
-            cursor: grab;
-            transition: all .15s;
-        }
-
-        .deal-card:hover {
-            border-color: var(--accent);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0,0,0,.3);
-        }
-
-        .deal-card.dragging {
-            opacity: 0.5;
-            transform: rotate(2deg);
-        }
-
-        .deal-card-company {
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 6px;
-        }
-
-        .deal-card-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 10px;
-        }
-
-        .deal-card-contact {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
-
-        .deal-card-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .deal-probability {
-            font-size: 12px;
-            font-weight: 600;
-            padding: 3px 8px;
-            border-radius: 6px;
-        }
-
-        .deal-probability.high { background: rgba(34,197,94,.15); color: var(--success); }
-        .deal-probability.medium { background: rgba(245,158,11,.15); color: var(--warning); }
-        .deal-probability.low { background: rgba(239,68,68,.15); color: var(--danger); }
-
-        .deal-card-date {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        /* ───────── MODALS ───────── */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,.6);
-            backdrop-filter: blur(4px);
-            z-index: 200;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal-overlay.show {
-            display: flex;
-        }
-
-        .modal {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            width: 100%;
-            max-width: 520px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 22px 24px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .modal-header h2 {
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .modal-close {
-            width: 34px; height: 34px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all .15s;
-        }
-
-        .modal-close:hover {
-            background: var(--danger);
-            color: #fff;
-            border-color: var(--danger);
-        }
-
-        .modal-body {
-            padding: 24px;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: var(--text-secondary);
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px 14px;
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 14px;
-            font-family: inherit;
-            outline: none;
-            transition: border-color .15s;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            border-color: var(--accent);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-
-        .modal-footer {
-            padding: 16px 24px 22px;
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-
-        /* ───────── RESPONSIVE ───────── */
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,.5);
-            z-index: 99;
-        }
-
-        @media (max-width: 1200px) {
-            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-            .charts-grid { grid-template-columns: 1fr; }
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .sidebar-overlay.open {
-                display: block;
-            }
-            .topbar {
-                left: 0;
-            }
-            .main {
-                margin-left: 0;
-                padding: 20px 16px;
-            }
-            .mobile-toggle {
-                display: flex;
-            }
-            .kpi-grid {
-                grid-template-columns: 1fr;
-            }
-            .topbar-user-name { display: none; }
-            .page-header { flex-direction: column; align-items: flex-start; }
-            .data-table { overflow-x: auto; }
-            .form-row { grid-template-columns: 1fr; }
-        }
-
-        /* ───────── SCROLLBAR ───────── */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
-
-        /* ───────── ANIMATIONS ───────── */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .view.active { animation: fadeIn .3s ease; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SalesCRM - Enterprise Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg-deep:#0B1121;--bg-main:#0F1729;--bg-card:#161F33;--bg-card-hover:#1B2640;
+--accent:#2563EB;--accent-hover:#3B82F6;--accent-light:rgba(37,99,235,.12);
+--text-primary:#F1F5F9;--text-secondary:#94A3B8;--text-muted:#64748B;
+--border:rgba(255,255,255,.06);--border-strong:rgba(255,255,255,.1);
+--success:#22C55E;--warning:#F59E0B;--danger:#EF4444;--purple:#A855F7;--cyan:#06B6D4;--pink:#EC4899;
+--sidebar-w:260px;--radius:12px;--radius-sm:8px;--transition:all .2s ease;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg-main);color:var(--text-primary);min-height:100vh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font-family:inherit;color:var(--text-primary);background:var(--bg-deep);border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:10px 14px;font-size:14px;outline:none;transition:var(--transition);width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light)}
+textarea{resize:vertical;min-height:100px}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.2)}
+
+/* SIDEBAR */
+.sidebar{position:fixed;left:0;top:0;width:var(--sidebar-w);height:100vh;background:var(--bg-deep);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:200;transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.sidebar-logo{padding:24px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+.sidebar-logo .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),#7C3AED);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff}
+.sidebar-logo span{font-size:19px;font-weight:700;letter-spacing:-.5px}
+.sidebar-nav{flex:1;padding:12px;overflow-y:auto}
+.nav-section{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);padding:20px 14px 8px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:var(--radius-sm);cursor:pointer;color:var(--text-secondary);font-size:14px;font-weight:500;transition:var(--transition);position:relative;margin-bottom:2px;border-left:3px solid transparent}
+.nav-item:hover{background:rgba(255,255,255,.04);color:var(--text-primary)}
+.nav-item.active{background:var(--accent-light);color:var(--accent);border-left-color:var(--accent)}
+.nav-item svg{width:20px;height:20px;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;min-width:22px;text-align:center}
+.sidebar-user{padding:16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.sidebar-user .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;flex-shrink:0}
+.sidebar-user-info{overflow:hidden}
+.sidebar-user-info .name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-user-info .role{font-size:12px;color:var(--text-muted)}
+
+/* HAMBURGER */
+.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:300;width:40px;height:40px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);align-items:center;justify-content:center;cursor:pointer;transition:var(--transition)}
+.hamburger:hover{background:var(--bg-card-hover)}
+.hamburger svg{width:22px;height:22px;color:var(--text-primary)}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:150;opacity:0;transition:opacity .3s ease}
+.overlay.show{display:block;opacity:1}
+
+/* MAIN CONTENT */
+.main{margin-left:var(--sidebar-w);min-height:100vh;padding:32px;transition:margin .3s ease}
+.main-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:16px}
+.main-header h1{font-size:24px;font-weight:700;letter-spacing:-.5px}
+.main-header .subtitle{font-size:14px;color:var(--text-muted);margin-top:4px}
+
+/* CARDS */
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;transition:var(--transition)}
+.card:hover{border-color:var(--border-strong)}
+
+/* GRID */
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+.grid-12{display:grid;grid-template-columns:7fr 5fr;gap:24px}
+.grid-email{display:grid;grid-template-columns:380px 1fr;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;min-height:600px}
+
+/* KPI */
+.kpi{display:flex;align-items:flex-start;gap:16px}
+.kpi-icon{width:48px;height:48px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.kpi-icon svg{width:24px;height:24px}
+.kpi-value{font-size:28px;font-weight:700;letter-spacing:-.5px;line-height:1.2}
+.kpi-label{font-size:13px;color:var(--text-muted);margin-top:2px}
+.kpi-change{font-size:12px;font-weight:600;margin-top:6px;display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:6px}
+.kpi-change.up{color:var(--success);background:rgba(34,197,94,.1)}
+.kpi-change.down{color:var(--danger);background:rgba(239,68,68,.1)}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;white-space:nowrap}
+.badge-lead{background:rgba(59,130,246,.12);color:#60A5FA}
+.badge-qualified{background:rgba(168,85,247,.12);color:#C084FC}
+.badge-proposal{background:rgba(245,158,11,.12);color:#FBBF24}
+.badge-negotiation{background:rgba(236,72,153,.12);color:#F472B6}
+.badge-won{background:rgba(34,197,94,.12);color:#4ADE80}
+.badge-lost{background:rgba(239,68,68,.12);color:#F87171}
+.badge-active{background:rgba(34,197,94,.12);color:#4ADE80}
+.badge-inactive{background:rgba(100,116,139,.15);color:#94A3B8}
+.badge-new{background:rgba(6,182,212,.12);color:#22D3EE}
+.badge-high{background:rgba(239,68,68,.12);color:#F87171}
+.badge-medium{background:rgba(245,158,11,.12);color:#FBBF24}
+.badge-low{background:rgba(34,197,94,.12);color:#4ADE80}
+.badge-todo{background:rgba(59,130,246,.12);color:#60A5FA}
+.badge-inprogress{background:rgba(245,158,11,.12);color:#FBBF24}
+.badge-done{background:rgba(34,197,94,.12);color:#4ADE80}
+
+/* AVATAR */
+.avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;flex-shrink:0;color:#fff}
+.av-blue{background:linear-gradient(135deg,#2563EB,#3B82F6)}
+.av-purple{background:linear-gradient(135deg,#7C3AED,#A855F7)}
+.av-green{background:linear-gradient(135deg,#059669,#22C55E)}
+.av-pink{background:linear-gradient(135deg,#DB2777,#EC4899)}
+.av-cyan{background:linear-gradient(135deg,#0891B2,#06B6D4)}
+.av-amber{background:linear-gradient(135deg,#D97706,#F59E0B)}
+.av-red{background:linear-gradient(135deg,#DC2626,#EF4444)}
+.av-indigo{background:linear-gradient(135deg,#4338CA,#6366F1)}
+
+/* TABLE */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:12px 16px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:14px 16px;border-bottom:1px solid var(--border);font-size:14px;white-space:nowrap}
+tr:hover td{background:rgba(255,255,255,.02)}
+.td-name{display:flex;align-items:center;gap:12px}
+.td-actions{display:flex;gap:8px}
+.td-actions button{width:32px;height:32px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;transition:var(--transition);color:var(--text-muted)}
+.td-actions button:hover{background:rgba(255,255,255,.06);color:var(--text-primary)}
+.td-actions button svg{width:16px;height:16px}
+input[type="checkbox"]{width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--radius-sm);font-size:14px;font-weight:600;transition:var(--transition);white-space:nowrap}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-hover);box-shadow:0 4px 12px rgba(37,99,235,.3)}
+.btn-ghost{border:1px solid var(--border-strong);color:var(--text-secondary)}
+.btn-ghost:hover{background:rgba(255,255,255,.04);color:var(--text-primary)}
+.btn svg{width:18px;height:18px}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;align-items:center;justify-content:center;opacity:0;transition:opacity .25s ease}
+.modal-overlay.show{display:flex;opacity:1}
+.modal{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:32px;width:90%;max-width:520px;max-height:90vh;overflow-y:auto;transform:scale(.95);transition:transform .25s ease}
+.modal-overlay.show .modal{transform:scale(1)}
+.modal h2{font-size:20px;font-weight:700;margin-bottom:24px}
+.modal-row{margin-bottom:16px}
+.modal-row label{display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:6px}
+.modal-row-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.modal-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:24px}
+
+/* SEARCH */
+.search-bar{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+.search-bar input{max-width:320px}
+.search-bar select{max-width:180px}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:0}
+.tab{padding:10px 18px;font-size:14px;font-weight:500;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:var(--transition);margin-bottom:-1px}
+.tab:hover{color:var(--text-primary)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab .count{margin-left:6px;font-size:11px;background:rgba(255,255,255,.06);padding:2px 7px;border-radius:4px}
+
+/* TIMELINE */
+.timeline-item{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--border)}
+.timeline-item:last-child{border:none}
+.timeline-dot{width:10px;height:10px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.timeline-content{flex:1}
+.timeline-text{font-size:14px;line-height:1.5}
+.timeline-time{font-size:12px;color:var(--text-muted);margin-top:4px}
+
+/* PIPELINE / KANBAN */
+.pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;overflow-x:auto;padding-bottom:8px}
+.pipeline-col{background:var(--bg-deep);border:1px solid var(--border);border-radius:var(--radius);min-width:240px;display:flex;flex-direction:column;max-height:calc(100vh - 200px)}
+.pipeline-header{padding:16px;border-bottom:1px solid var(--border);flex-shrink:0}
+.pipeline-header h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.pipeline-header .meta{font-size:12px;color:var(--text-muted)}
+.pipeline-cards{flex:1;padding:12px;overflow-y:auto;min-height:60px}
+.pipeline-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;margin-bottom:10px;cursor:grab;transition:var(--transition)}
+.pipeline-card:hover{border-color:var(--border-strong);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.pipeline-card.dragging{opacity:.5;transform:rotate(2deg)}
+.pipeline-card .deal-name{font-size:14px;font-weight:600;margin-bottom:6px}
+.pipeline-card .deal-value{font-size:18px;font-weight:700;color:var(--accent);margin-bottom:8px}
+.pipeline-card .deal-contact{font-size:12px;color:var(--text-muted);margin-bottom:10px}
+.pipeline-card .prob-bar{height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;margin-bottom:8px}
+.pipeline-card .prob-fill{height:100%;border-radius:2px;transition:width .3s ease}
+.pipeline-card .deal-days{font-size:11px;color:var(--text-muted)}
+.pipeline-col.drag-over{background:rgba(37,99,235,.05);border-color:var(--accent)}
+
+/* TASKS */
+.task-item{display:flex;align-items:center;gap:14px;padding:16px 0;border-bottom:1px solid var(--border);transition:var(--transition)}
+.task-item.completed .task-title{text-decoration:line-through;color:var(--text-muted)}
+.task-title{flex:1;font-size:14px;font-weight:500}
+.task-meta{display:flex;align-items:center;gap:12px}
+.task-due{font-size:12px;color:var(--text-muted);white-space:nowrap}
+.task-assignee{width:28px;height:28px;border-radius:50%;font-size:11px;font-weight:600}
+
+/* CALENDAR */
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.cal-header h2{font-size:20px;font-weight:700}
+.cal-nav{display:flex;gap:8px}
+.cal-nav button{width:36px;height:36px;border-radius:var(--radius-sm);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;transition:var(--transition)}
+.cal-nav button:hover{background:rgba(255,255,255,.04)}
+.cal-nav button svg{width:18px;height:18px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--border);border-radius:var(--radius);overflow:hidden}
+.cal-day-header{background:var(--bg-deep);padding:12px;text-align:center;font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+.cal-day{background:var(--bg-card);padding:10px;min-height:100px;cursor:pointer;transition:var(--transition);position:relative}
+.cal-day:hover{background:var(--bg-card-hover)}
+.cal-day.other{opacity:.3}
+.cal-day.today .day-num{background:var(--accent);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center}
+.cal-day .day-num{font-size:13px;font-weight:500;margin-bottom:6px}
+.cal-day .event-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin:1px}
+.cal-day.selected{outline:2px solid var(--accent);outline-offset:-2px}
+.cal-events{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;min-height:400px}
+.cal-events h3{font-size:16px;font-weight:700;margin-bottom:16px}
+.cal-event{border-left:3px solid var(--accent);padding:12px 16px;margin-bottom:12px;background:var(--bg-deep);border-radius:0 var(--radius-sm) var(--radius-sm) 0;transition:var(--transition)}
+.cal-event:hover{background:rgba(255,255,255,.03)}
+.cal-event .ev-title{font-size:14px;font-weight:600;margin-bottom:4px}
+.cal-event .ev-time{font-size:12px;color:var(--text-muted)}
+
+/* EMAIL */
+.email-list{border-right:1px solid var(--border);overflow-y:auto;background:var(--bg-card)}
+.email-item{padding:16px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:var(--transition);display:flex;gap:12px;position:relative}
+.email-item:hover{background:var(--bg-card-hover)}
+.email-item.active{background:var(--accent-light)}
+.email-item.unread .email-subject{font-weight:700}
+.email-item .unread-dot{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:8px;height:8px;background:var(--accent);border-radius:50%}
+.email-item .email-avatar{flex-shrink:0}
+.email-info{overflow:hidden;flex:1}
+.email-sender{font-size:14px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.email-subject{font-size:13px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.email-preview{font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.email-time{font-size:11px;color:var(--text-muted);white-space:nowrap;margin-left:auto;flex-shrink:0}
+.email-reading{padding:32px;overflow-y:auto;background:var(--bg-main)}
+.email-reading .er-header{margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.email-reading .er-subject{font-size:20px;font-weight:700;margin-bottom:12px}
+.email-reading .er-meta{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--text-secondary)}
+.email-reading .er-body{font-size:14px;line-height:1.8;color:var(--text-secondary)}
+.email-reading .er-body p{margin-bottom:16px}
+
+/* FUNNEL */
+.funnel-bar{display:flex;align-items:center;gap:16px;margin-bottom:12px}
+.funnel-label{width:100px;text-align:right;font-size:13px;font-weight:500;color:var(--text-secondary);flex-shrink:0}
+.funnel-track{flex:1;height:36px;border-radius:6px;position:relative;display:flex;align-items:center;padding:0 12px;font-size:13px;font-weight:600;color:#fff}
+.funnel-count{font-size:13px;color:var(--text-muted);width:50px;text-align:right;flex-shrink:0}
+
+/* PROGRESS BAR */
+.progress{height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px}
+
+/* VIEW */
+.view{display:none}
+.view.active{display:block}
+
+/* RESPONSIVE */
+@media(max-width:1200px){.grid-4{grid-template-columns:repeat(2,1fr)}.pipeline{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:768px){
+.sidebar{transform:translateX(-100%)}
+.sidebar.open{transform:translateX(0)}
+.hamburger{display:flex}
+.main{margin-left:0;padding:20px;padding-top:72px}
+.grid-4,.grid-3,.grid-2,.grid-12{grid-template-columns:1fr}
+.grid-email{grid-template-columns:1fr}
+.email-reading{display:none}
+.email-reading.mobile-show{display:block}
+.pipeline{grid-template-columns:repeat(2,1fr)}
+.cal-grid .cal-day{min-height:60px}
+}
+@media(max-width:480px){.pipeline{grid-template-columns:1fr}.grid-email{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 
-<!-- SIDEBAR OVERLAY (mobile) -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<!-- HAMBURGER -->
+<button class="hamburger" onclick="toggleSidebar()">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 
 <!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">
-        <div class="logo-icon">S</div>
-        <span>SalesCRM</span>
-    </div>
-
-    <nav class="sidebar-nav">
-        <div class="nav-section-title">Main</div>
-        <div class="nav-item active" data-view="dashboard" onclick="switchView('dashboard')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-            Dashboard
-        </div>
-        <div class="nav-item" data-view="contacts" onclick="switchView('contacts')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            Contacts
-            <div class="badge">48</div>
-        </div>
-        <div class="nav-item" data-view="deals" onclick="switchView('deals')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            Deals
-        </div>
-        <div class="nav-item" data-view="pipeline" onclick="switchView('pipeline')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-4"/><line x1="8" y1="21" x2="8" y2="16"/><line x1="16" y1="21" x2="16" y2="16"/></svg>
-            Pipeline
-        </div>
-
-        <div class="nav-section-title">Manage</div>
-        <div class="nav-item" data-view="tasks" onclick="switchView('tasks')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-            Tasks
-            <div class="badge">5</div>
-        </div>
-        <div class="nav-item" data-view="reports" onclick="switchView('reports')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Reports
-        </div>
-        <div class="nav-item" data-view="calendar" onclick="switchView('calendar')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            Calendar
-        </div>
-        <div class="nav-item" data-view="email" onclick="switchView('email')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            Email
-            <div class="badge">3</div>
-        </div>
-        <div class="nav-item" onclick="switchView('dashboard')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            Settings
-        </div>
-    </nav>
-
-    <div class="sidebar-user">
-        <div class="sidebar-user-avatar">JD</div>
-        <div class="sidebar-user-info">
-            <div class="name">James Donovan</div>
-            <div class="role">Sales Manager</div>
-        </div>
-    </div>
+<div class="sidebar-logo">
+<div class="logo-icon">S</div>
+<span>SalesCRM</span>
+</div>
+<nav class="sidebar-nav">
+<div class="nav-item active" data-view="dashboard" onclick="switchView('dashboard')">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+Dashboard
+</div>
+<div class="nav-item" data-view="contacts" onclick="switchView('contacts')">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+Contacts
+</div>
+<div class="nav-item" data-view="deals" onclick="switchView('deals')">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+Deals
+</div>
+<div class="nav-item" data-view="pipeline" onclick="switchView('pipeline')">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="6" height="18" rx="1"/><rect x="9" y="8" width="6" height="13" rx="1"/><rect x="17" y="5" width="6" height="16" rx="1"/></svg>
+Pipeline
+</div>
+<div class="nav-section">Manage</div>
+<div class="nav-item" data-view="tasks" onclick="switchView('tasks')">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+Tasks
+<span class="nav-badge">3</span>
+</div>
+<div class="nav-item" data-view="reports" onclick="switchView('reports')">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+Reports
+</div>
+<div class="nav-item" data-view="calendar" onclick="switchView('calendar')">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+Calendar
+</div>
+<div class="nav-item" data-view="email" onclick="switchView('email')">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+Email
+<span class="nav-badge">8</span>
+</div>
+<div style="flex:1"></div>
+<div class="nav-item" data-view="settings" onclick="switchView('dashboard')">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+Settings
+</div>
+</nav>
+<div class="sidebar-user">
+<div class="avatar" style="background:linear-gradient(135deg,#2563EB,#7C3AED)">JD</div>
+<div class="sidebar-user-info">
+<div class="name">James Donovan</div>
+<div class="role">Sales Manager</div>
+</div>
+</div>
 </aside>
 
-<!-- TOP BAR -->
-<header class="topbar">
-    <button class="mobile-toggle" onclick="toggleSidebar()">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    </button>
-
-    <div class="topbar-search">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" placeholder="Search contacts, deals, tasks..." id="globalSearch" oninput="handleGlobalSearch(this.value)">
-    </div>
-
-    <div class="topbar-actions">
-        <button class="topbar-btn" title="Notifications">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-            <span class="notif-badge">3</span>
-        </button>
-        <button class="topbar-btn" title="Messages">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        </button>
-    </div>
-
-    <div class="topbar-user" onclick="document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('open');">
-        <div class="topbar-user-avatar">JD</div>
-        <span class="topbar-user-name">James Donovan</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-    </div>
-</header>
-
-<!-- MAIN CONTENT -->
+<!-- MAIN -->
 <main class="main">
 
-    <!-- ───── DASHBOARD VIEW ───── -->
-    <section class="view active" id="view-dashboard">
-        <div class="page-header">
-            <div>
-                <h1>Dashboard</h1>
-                <p>Welcome back, James. Here is your sales overview.</p>
-            </div>
-            <div style="display:flex;gap:10px">
-                <button class="btn btn-secondary btn-sm">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    Last 6 Months
-                </button>
-                <button class="btn btn-primary btn-sm" onclick="openModal('deal')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                    New Deal
-                </button>
-            </div>
-        </div>
+<!-- ══════════ DASHBOARD ══════════ -->
+<div class="view active" id="view-dashboard">
+<div class="main-header">
+<div>
+<h1>Good morning, James</h1>
+<div class="subtitle">Here's what's happening with your sales today.</div>
+</div>
+<div style="font-size:14px;color:var(--text-muted)">Sunday, April 12, 2026</div>
+</div>
 
-        <!-- KPI Cards -->
-        <div class="kpi-grid">
-            <div class="kpi-card">
-                <div class="kpi-card-header">
-                    <span class="label">Total Revenue</span>
-                    <div class="kpi-icon blue">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                    </div>
-                </div>
-                <div class="kpi-value">$124,500</div>
-                <div class="kpi-change up">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
-                    +12.5% <span>vs last month</span>
-                </div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-card-header">
-                    <span class="label">New Leads</span>
-                    <div class="kpi-icon green">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-                    </div>
-                </div>
-                <div class="kpi-value">48</div>
-                <div class="kpi-change up">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
-                    +8.2% <span>vs last month</span>
-                </div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-card-header">
-                    <span class="label">Deals Won</span>
-                    <div class="kpi-icon purple">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                    </div>
-                </div>
-                <div class="kpi-value">12</div>
-                <div class="kpi-change up">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
-                    +3.1% <span>vs last month</span>
-                </div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-card-header">
-                    <span class="label">Conversion Rate</span>
-                    <div class="kpi-icon orange">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                    </div>
-                </div>
-                <div class="kpi-value">24%</div>
-                <div class="kpi-change down">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg>
-                    -1.8% <span>vs last month</span>
-                </div>
-            </div>
-        </div>
+<div class="grid-4" style="margin-bottom:24px">
+<div class="card kpi">
+<div class="kpi-icon" style="background:rgba(37,99,235,.12);color:#60A5FA"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+<div>
+<div class="kpi-value">$124,500</div>
+<div class="kpi-label">Total Revenue</div>
+<div class="kpi-change up">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
++12.5%
+</div>
+</div>
+</div>
+<div class="card kpi">
+<div class="kpi-icon" style="background:rgba(6,182,212,.12);color:#22D3EE"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg></div>
+<div>
+<div class="kpi-value">48</div>
+<div class="kpi-label">New Leads</div>
+<div class="kpi-change up">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
++8.2%
+</div>
+</div>
+</div>
+<div class="card kpi">
+<div class="kpi-icon" style="background:rgba(34,197,94,.12);color:#4ADE80"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+<div>
+<div class="kpi-value">12</div>
+<div class="kpi-label">Deals Won</div>
+<div class="kpi-change up">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
++4.1%
+</div>
+</div>
+</div>
+<div class="card kpi">
+<div class="kpi-icon" style="background:rgba(168,85,247,.12);color:#C084FC"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+<div>
+<div class="kpi-value">24%</div>
+<div class="kpi-label">Conversion Rate</div>
+<div class="kpi-change down">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+-2.3%
+</div>
+</div>
+</div>
+</div>
 
-        <!-- Charts -->
-        <div class="charts-grid">
-            <div class="chart-card">
-                <div class="chart-card-header">
-                    <h3>Revenue Overview</h3>
-                    <div class="chart-tabs">
-                        <button class="chart-tab active">6M</button>
-                        <button class="chart-tab">1Y</button>
-                        <button class="chart-tab">All</button>
-                    </div>
-                </div>
-                <div class="chart-wrapper">
-                    <canvas id="revenueChart"></canvas>
-                </div>
-            </div>
-            <div class="chart-card">
-                <div class="chart-card-header">
-                    <h3>Deals by Stage</h3>
-                </div>
-                <div class="chart-wrapper">
-                    <canvas id="dealsChart"></canvas>
-                </div>
-            </div>
-        </div>
+<div class="grid-12" style="margin-bottom:24px">
+<div class="card">
+<h3 style="font-size:16px;font-weight:700;margin-bottom:20px">Revenue Trend</h3>
+<canvas id="revenueChart" height="100"></canvas>
+</div>
+<div class="card">
+<h3 style="font-size:16px;font-weight:700;margin-bottom:20px">Deals by Stage</h3>
+<canvas id="dealsStageChart" height="180"></canvas>
+</div>
+</div>
 
-        <!-- Recent Activity -->
-        <div class="activity-card">
-            <h3>Recent Activity</h3>
-            <div class="activity-list">
-                <div class="activity-item">
-                    <div class="activity-dot green"></div>
-                    <div class="activity-content">
-                        <p><strong>Sarah Chen</strong> closed a deal with <strong>TechVista Solutions</strong> for $32,000</p>
-                        <div class="time">2 hours ago</div>
-                    </div>
-                </div>
-                <div class="activity-item">
-                    <div class="activity-dot blue"></div>
-                    <div class="activity-content">
-                        <p>New lead <strong>Marcus Rivera</strong> from <strong>Quantum Dynamics</strong> added to pipeline</p>
-                        <div class="time">3 hours ago</div>
-                    </div>
-                </div>
-                <div class="activity-item">
-                    <div class="activity-dot orange"></div>
-                    <div class="activity-content">
-                        <p>Proposal sent to <strong>Horizon Media Group</strong> - awaiting response</p>
-                        <div class="time">5 hours ago</div>
-                    </div>
-                </div>
-                <div class="activity-item">
-                    <div class="activity-dot purple"></div>
-                    <div class="activity-content">
-                        <p>Meeting scheduled with <strong>Elena Kowalski</strong> at <strong>NexGen Robotics</strong></p>
-                        <div class="time">Yesterday at 4:30 PM</div>
-                    </div>
-                </div>
-                <div class="activity-item">
-                    <div class="activity-dot red"></div>
-                    <div class="activity-content">
-                        <p>Deal with <strong>Apex Manufacturing</strong> moved to <strong>Closed Lost</strong></p>
-                        <div class="time">Yesterday at 11:15 AM</div>
-                    </div>
-                </div>
-                <div class="activity-item">
-                    <div class="activity-dot green"></div>
-                    <div class="activity-content">
-                        <p><strong>David Park</strong> qualified lead <strong>Stellar Innovations</strong> - moved to Proposal</p>
-                        <div class="time">2 days ago</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+<div class="card">
+<h3 style="font-size:16px;font-weight:700;margin-bottom:20px">Recent Activity</h3>
+<div class="timeline-item"><div class="timeline-dot" style="background:var(--success)"></div><div class="timeline-content"><div class="timeline-text"><strong>Sarah Chen</strong> closed deal with Acme Corp for <strong>$28,500</strong></div><div class="timeline-time">2 hours ago</div></div></div>
+<div class="timeline-item"><div class="timeline-dot" style="background:var(--accent)"></div><div class="timeline-content"><div class="timeline-text"><strong>Michael Torres</strong> added new lead: <strong>TechVision Inc</strong></div><div class="timeline-time">4 hours ago</div></div></div>
+<div class="timeline-item"><div class="timeline-dot" style="background:var(--warning)"></div><div class="timeline-content"><div class="timeline-text"><strong>Emily Watson</strong> moved <strong>Quantum Solutions</strong> to Negotiation stage</div><div class="timeline-time">5 hours ago</div></div></div>
+<div class="timeline-item"><div class="timeline-dot" style="background:var(--purple)"></div><div class="timeline-content"><div class="timeline-text"><strong>James Donovan</strong> scheduled demo with <strong>NovaBright Ltd</strong></div><div class="timeline-time">Yesterday at 4:30 PM</div></div></div>
+<div class="timeline-item"><div class="timeline-dot" style="background:var(--cyan)"></div><div class="timeline-content"><div class="timeline-text"><strong>Lisa Park</strong> sent proposal to <strong>CloudSync Technologies</strong></div><div class="timeline-time">Yesterday at 2:15 PM</div></div></div>
+<div class="timeline-item"><div class="timeline-dot" style="background:var(--pink)"></div><div class="timeline-content"><div class="timeline-text"><strong>David Kim</strong> completed follow-up call with <strong>Meridian Group</strong></div><div class="timeline-time">Yesterday at 11:00 AM</div></div></div>
+</div>
+</div>
 
-    <!-- ───── CONTACTS VIEW ───── -->
-    <section class="view" id="view-contacts">
-        <div class="page-header">
-            <div>
-                <h1>Contacts</h1>
-                <p>Manage your contacts and leads</p>
-            </div>
-            <button class="btn btn-primary" onclick="openModal('contact')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Add Contact
-            </button>
-        </div>
+<!-- ══════════ CONTACTS ══════════ -->
+<div class="view" id="view-contacts">
+<div class="main-header">
+<div><h1>Contacts</h1><div class="subtitle">Manage your customer relationships</div></div>
+<button class="btn btn-primary" onclick="openModal('contactModal')">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+Add Contact
+</button>
+</div>
+<div class="search-bar">
+<input type="text" placeholder="Search contacts..." id="contactSearch" oninput="filterContacts()">
+<select id="contactStatusFilter" onchange="filterContacts()">
+<option value="">All Status</option>
+<option value="active">Active</option>
+<option value="new">New</option>
+<option value="inactive">Inactive</option>
+</select>
+</div>
+<div class="card" style="padding:0;overflow:hidden">
+<div class="table-wrap">
+<table>
+<thead><tr><th style="width:40px"><input type="checkbox" onclick="toggleAllContacts(this)"></th><th>Name</th><th>Company</th><th>Email</th><th>Phone</th><th>Status</th><th>Last Contact</th><th>Actions</th></tr></thead>
+<tbody id="contactsBody"></tbody>
+</table>
+</div>
+</div>
+</div>
 
-        <div class="table-toolbar">
-            <div class="table-search">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <input type="text" placeholder="Search contacts..." id="contactSearch" oninput="filterContacts()">
-            </div>
-            <select class="filter-select" id="statusFilter" onchange="filterContacts()">
-                <option value="all">All Statuses</option>
-                <option value="active">Active</option>
-                <option value="lead">Lead</option>
-                <option value="prospect">Prospect</option>
-                <option value="inactive">Inactive</option>
-            </select>
-        </div>
+<!-- CONTACT MODAL -->
+<div class="modal-overlay" id="contactModal">
+<div class="modal">
+<h2>Add New Contact</h2>
+<div class="modal-row-2">
+<div class="modal-row"><label>First Name</label><input type="text" placeholder="John"></div>
+<div class="modal-row"><label>Last Name</label><input type="text" placeholder="Smith"></div>
+</div>
+<div class="modal-row"><label>Company</label><input type="text" placeholder="Acme Corp"></div>
+<div class="modal-row-2">
+<div class="modal-row"><label>Email</label><input type="email" placeholder="john@acme.com"></div>
+<div class="modal-row"><label>Phone</label><input type="text" placeholder="(555) 123-4567"></div>
+</div>
+<div class="modal-row"><label>Status</label><select><option>Active</option><option>New</option><option>Inactive</option></select></div>
+<div class="modal-actions">
+<button class="btn btn-ghost" onclick="closeModal('contactModal')">Cancel</button>
+<button class="btn btn-primary" onclick="closeModal('contactModal')">Save Contact</button>
+</div>
+</div>
+</div>
 
-        <div class="data-table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Company</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Status</th>
-                        <th>Last Contact</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="contactsBody"></tbody>
-            </table>
-        </div>
-    </section>
+<!-- ══════════ DEALS ══════════ -->
+<div class="view" id="view-deals">
+<div class="main-header">
+<div><h1>Deals</h1><div class="subtitle">Track and manage your sales deals</div></div>
+<button class="btn btn-primary" onclick="openModal('dealModal')">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+Add Deal
+</button>
+</div>
+<div class="grid-4" style="margin-bottom:24px">
+<div class="card"><div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Total Value</div><div style="font-size:24px;font-weight:700">$487,300</div></div>
+<div class="card"><div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Avg Deal Size</div><div style="font-size:24px;font-weight:700">$48,730</div></div>
+<div class="card"><div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Win Rate</div><div style="font-size:24px;font-weight:700">68%</div></div>
+<div class="card"><div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Deals This Month</div><div style="font-size:24px;font-weight:700">7</div></div>
+</div>
+<div class="card" style="padding:0;overflow:hidden">
+<div class="table-wrap">
+<table>
+<thead><tr><th>Deal Name</th><th>Company</th><th>Value</th><th>Stage</th><th>Probability</th><th>Close Date</th><th>Owner</th></tr></thead>
+<tbody id="dealsBody"></tbody>
+</table>
+</div>
+</div>
+</div>
 
-    <!-- ───── DEALS VIEW ───── -->
-    <section class="view" id="view-deals">
-        <div class="page-header">
-            <div>
-                <h1>Deals</h1>
-                <p>Track and manage your sales deals</p>
-            </div>
-            <button class="btn btn-primary" onclick="openModal('deal')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Add Deal
-            </button>
-        </div>
+<!-- DEAL MODAL -->
+<div class="modal-overlay" id="dealModal">
+<div class="modal">
+<h2>Add New Deal</h2>
+<div class="modal-row"><label>Deal Name</label><input type="text" placeholder="Enterprise License"></div>
+<div class="modal-row-2">
+<div class="modal-row"><label>Company</label><input type="text" placeholder="Acme Corp"></div>
+<div class="modal-row"><label>Value ($)</label><input type="number" placeholder="50000"></div>
+</div>
+<div class="modal-row-2">
+<div class="modal-row"><label>Stage</label><select><option>Lead</option><option>Qualified</option><option>Proposal</option><option>Negotiation</option><option>Won</option></select></div>
+<div class="modal-row"><label>Probability (%)</label><input type="number" placeholder="50" min="0" max="100"></div>
+</div>
+<div class="modal-row-2">
+<div class="modal-row"><label>Close Date</label><input type="date"></div>
+<div class="modal-row"><label>Owner</label><input type="text" placeholder="James Donovan"></div>
+</div>
+<div class="modal-actions">
+<button class="btn btn-ghost" onclick="closeModal('dealModal')">Cancel</button>
+<button class="btn btn-primary" onclick="closeModal('dealModal')">Save Deal</button>
+</div>
+</div>
+</div>
 
-        <div class="data-table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Deal</th>
-                        <th>Company</th>
-                        <th>Value</th>
-                        <th>Stage</th>
-                        <th>Probability</th>
-                        <th>Contact</th>
-                        <th>Close Date</th>
-                    </tr>
-                </thead>
-                <tbody id="dealsBody"></tbody>
-            </table>
-        </div>
-    </section>
+<!-- ══════════ PIPELINE ══════════ -->
+<div class="view" id="view-pipeline">
+<div class="main-header">
+<div><h1>Pipeline</h1><div class="subtitle">Drag and drop deals between stages</div></div>
+</div>
+<div class="pipeline" id="pipelineBoard"></div>
+</div>
 
-    <!-- ───── PIPELINE VIEW ───── -->
-    <section class="view" id="view-pipeline">
-        <div class="page-header">
-            <div>
-                <h1>Pipeline</h1>
-                <p>Drag and drop deals between stages</p>
-            </div>
-            <button class="btn btn-primary" onclick="openModal('deal')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Add Deal
-            </button>
-        </div>
+<!-- ══════════ TASKS ══════════ -->
+<div class="view" id="view-tasks">
+<div class="main-header">
+<div><h1>Tasks</h1><div class="subtitle">Manage your daily tasks and activities</div></div>
+</div>
+<div class="tabs" id="taskTabs">
+<div class="tab active" data-filter="all" onclick="filterTasks('all')">All<span class="count" id="countAll">10</span></div>
+<div class="tab" data-filter="todo" onclick="filterTasks('todo')">To Do<span class="count" id="countTodo">4</span></div>
+<div class="tab" data-filter="inprogress" onclick="filterTasks('inprogress')">In Progress<span class="count" id="countProgress">3</span></div>
+<div class="tab" data-filter="done" onclick="filterTasks('done')">Done<span class="count" id="countDone">3</span></div>
+</div>
+<div class="card" style="padding:16px 0">
+<div style="padding:0 20px 16px;border-bottom:1px solid var(--border)">
+<button class="btn btn-ghost" onclick="toggleAddTask()" id="addTaskBtn">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+Add Task
+</button>
+<div id="addTaskForm" style="display:none;margin-top:12px;display:none">
+<div style="display:flex;gap:12px;flex-wrap:wrap">
+<input type="text" placeholder="Task title..." id="newTaskTitle" style="flex:1;min-width:200px">
+<select id="newTaskPriority" style="width:120px"><option value="medium">Medium</option><option value="high">High</option><option value="low">Low</option></select>
+<button class="btn btn-primary" onclick="addTask()" style="padding:10px 16px">Add</button>
+</div>
+</div>
+</div>
+<div id="tasksList" style="padding:0 20px"></div>
+</div>
+</div>
 
-        <div class="pipeline-board" id="pipelineBoard"></div>
-    </section>
+<!-- ══════════ REPORTS ══════════ -->
+<div class="view" id="view-reports">
+<div class="main-header">
+<div><h1>Reports</h1><div class="subtitle">Sales performance and analytics</div></div>
+</div>
+<div class="grid-4" style="margin-bottom:24px">
+<div class="card"><div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Best Month</div><div style="font-size:24px;font-weight:700">March '26</div><div style="font-size:13px;color:var(--success);margin-top:4px">$52,400 revenue</div></div>
+<div class="card"><div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Avg Deal Size</div><div style="font-size:24px;font-weight:700">$12,380</div><div style="font-size:13px;color:var(--success);margin-top:4px">+15% vs last quarter</div></div>
+<div class="card"><div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Sales Cycle</div><div style="font-size:24px;font-weight:700">23 days</div><div style="font-size:13px;color:var(--success);margin-top:4px">-3 days improvement</div></div>
+<div class="card"><div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Top Source</div><div style="font-size:24px;font-weight:700">Referrals</div><div style="font-size:13px;color:var(--text-muted);margin-top:4px">38% of total leads</div></div>
+</div>
+<div class="grid-12" style="margin-bottom:24px">
+<div class="card">
+<h3 style="font-size:16px;font-weight:700;margin-bottom:20px">Monthly Revenue</h3>
+<canvas id="monthlyRevenueChart" height="100"></canvas>
+</div>
+<div class="card">
+<h3 style="font-size:16px;font-weight:700;margin-bottom:20px">Won vs Lost</h3>
+<canvas id="wonLostChart" height="180"></canvas>
+</div>
+</div>
+<div class="grid-2">
+<div class="card">
+<h3 style="font-size:16px;font-weight:700;margin-bottom:20px">Conversion Funnel</h3>
+<div class="funnel-bar"><div class="funnel-label">Lead</div><div class="funnel-track" style="width:100%;background:rgba(59,130,246,.8)">1,240</div><div class="funnel-count">100%</div></div>
+<div class="funnel-bar"><div class="funnel-label">Qualified</div><div class="funnel-track" style="width:72%;background:rgba(168,85,247,.8)">893</div><div class="funnel-count">72%</div></div>
+<div class="funnel-bar"><div class="funnel-label">Proposal</div><div class="funnel-track" style="width:45%;background:rgba(245,158,11,.8)">558</div><div class="funnel-count">45%</div></div>
+<div class="funnel-bar"><div class="funnel-label">Negotiation</div><div class="funnel-track" style="width:28%;background:rgba(236,72,153,.8)">347</div><div class="funnel-count">28%</div></div>
+<div class="funnel-bar"><div class="funnel-label">Won</div><div class="funnel-track" style="width:18%;background:rgba(34,197,94,.8)">223</div><div class="funnel-count">18%</div></div>
+</div>
+<div class="card">
+<h3 style="font-size:16px;font-weight:700;margin-bottom:20px">Top Performers</h3>
+<table>
+<thead><tr><th>Name</th><th>Deals</th><th>Revenue</th><th>Win Rate</th></tr></thead>
+<tbody>
+<tr><td><div class="td-name"><div class="avatar av-blue">SC</div>Sarah Chen</div></td><td>18</td><td>$89,200</td><td><div style="display:flex;align-items:center;gap:8px"><div class="progress" style="width:80px"><div class="progress-fill" style="width:82%;background:var(--success)"></div></div><span style="font-size:12px">82%</span></div></td></tr>
+<tr><td><div class="td-name"><div class="avatar av-purple">MT</div>Michael Torres</div></td><td>15</td><td>$76,400</td><td><div style="display:flex;align-items:center;gap:8px"><div class="progress" style="width:80px"><div class="progress-fill" style="width:75%;background:var(--success)"></div></div><span style="font-size:12px">75%</span></div></td></tr>
+<tr><td><div class="td-name"><div class="avatar av-green">EW</div>Emily Watson</div></td><td>14</td><td>$68,900</td><td><div style="display:flex;align-items:center;gap:8px"><div class="progress" style="width:80px"><div class="progress-fill" style="width:71%;background:var(--warning)"></div></div><span style="font-size:12px">71%</span></div></td></tr>
+<tr><td><div class="td-name"><div class="avatar av-pink">JD</div>James Donovan</div></td><td>12</td><td>$62,300</td><td><div style="display:flex;align-items:center;gap:8px"><div class="progress" style="width:80px"><div class="progress-fill" style="width:68%;background:var(--warning)"></div></div><span style="font-size:12px">68%</span></div></td></tr>
+<tr><td><div class="td-name"><div class="avatar av-cyan">LP</div>Lisa Park</div></td><td>10</td><td>$54,100</td><td><div style="display:flex;align-items:center;gap:8px"><div class="progress" style="width:80px"><div class="progress-fill" style="width:64%;background:var(--warning)"></div></div><span style="font-size:12px">64%</span></div></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
 
-    <!-- ───── TASKS VIEW ───── -->
-    <section class="view" id="view-tasks">
-        <div class="view-header"><div><h1>Tasks</h1><p>Manage your team's tasks and to-dos</p></div>
-        <button class="btn btn-primary btn-sm" onclick="document.getElementById('addTaskForm').style.display=document.getElementById('addTaskForm').style.display==='none'?'flex':'none'">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Task</button></div>
-        <div class="filter-bar" style="margin-bottom:20px">
-            <button class="filter-btn active" onclick="filterTasks('all',this)">All</button>
-            <button class="filter-btn" onclick="filterTasks('todo',this)">To Do</button>
-            <button class="filter-btn" onclick="filterTasks('progress',this)">In Progress</button>
-            <button class="filter-btn" onclick="filterTasks('done',this)">Done</button>
-        </div>
-        <div id="addTaskForm" style="display:none;gap:10px;margin-bottom:20px;background:var(--bg-secondary);padding:16px;border-radius:12px;border:1px solid var(--border);flex-wrap:wrap">
-            <input type="text" id="newTaskTitle" placeholder="Task title..." style="flex:2;min-width:200px;padding:10px 14px;background:var(--bg-primary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:.9rem">
-            <select id="newTaskPriority" style="padding:10px;background:var(--bg-primary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary)"><option value="High">High</option><option value="Medium" selected>Medium</option><option value="Low">Low</option></select>
-            <input type="date" id="newTaskDue" style="padding:10px;background:var(--bg-primary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary)">
-            <button onclick="addTask()" class="btn btn-primary btn-sm">Add</button>
-        </div>
-        <div id="tasksList" class="card" style="padding:0;overflow:hidden"></div>
-    </section>
+<!-- ══════════ CALENDAR ══════════ -->
+<div class="view" id="view-calendar">
+<div class="main-header">
+<div><h1>Calendar</h1><div class="subtitle">Upcoming meetings and events</div></div>
+</div>
+<div class="grid-12">
+<div>
+<div class="cal-header">
+<h2 id="calTitle">April 2026</h2>
+<div class="cal-nav">
+<button onclick="changeMonth(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+<button onclick="changeMonth(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 6 15 12 9 18"/></svg></button>
+</div>
+</div>
+<div class="cal-grid" id="calGrid"></div>
+</div>
+<div class="cal-events" id="calEvents">
+<h3>Events</h3>
+<p style="color:var(--text-muted);font-size:14px">Select a date to view events</p>
+</div>
+</div>
+</div>
 
-    <!-- ───── REPORTS VIEW ───── -->
-    <section class="view" id="view-reports">
-        <div class="view-header"><div><h1>Reports</h1><p>Sales analytics and team performance</p></div></div>
-        <div class="kpi-grid">
-            <div class="kpi-card"><div class="kpi-icon" style="background:rgba(59,130,246,.15);color:#3B82F6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="kpi-info"><span class="kpi-label">Best Month</span><span class="kpi-value">March</span><span class="kpi-change positive">$42,800 revenue</span></div></div>
-            <div class="kpi-card"><div class="kpi-icon" style="background:rgba(34,197,94,.15);color:#22C55E"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="kpi-info"><span class="kpi-label">Avg Deal Size</span><span class="kpi-value">$8,250</span><span class="kpi-change positive">+5% vs last quarter</span></div></div>
-            <div class="kpi-card"><div class="kpi-icon" style="background:rgba(245,158,11,.15);color:#F59E0B"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="kpi-info"><span class="kpi-label">Avg Sales Cycle</span><span class="kpi-value">32 days</span><span class="kpi-change negative">+3 days vs last quarter</span></div></div>
-            <div class="kpi-card"><div class="kpi-icon" style="background:rgba(168,85,247,.15);color:#A855F7"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="kpi-info"><span class="kpi-label">Top Source</span><span class="kpi-value">Referrals</span><span class="kpi-change positive">38% of leads</span></div></div>
-        </div>
-        <div class="chart-grid">
-            <div class="card"><div class="card-header"><h3>Monthly Revenue</h3></div><div class="chart-container"><canvas id="revenueBarChart"></canvas></div></div>
-            <div class="card"><div class="card-header"><h3>Deals Won vs Lost</h3></div><div class="chart-container"><canvas id="winLossChart"></canvas></div></div>
-        </div>
-        <div class="card" style="margin-top:24px"><div class="card-header"><h3>Conversion Funnel</h3></div>
-            <div style="padding:20px;display:flex;flex-direction:column;gap:14px" id="funnelBars">
-                <div style="display:flex;align-items:center;gap:14px"><span style="width:100px;font-size:.85rem;color:var(--text-secondary)">Leads</span><div style="flex:1;height:36px;background:var(--bg-primary);border-radius:8px;overflow:hidden"><div style="height:100%;width:100%;background:#3B82F6;border-radius:8px;display:flex;align-items:center;padding-left:12px;font-size:.8rem;font-weight:600">248</div></div></div>
-                <div style="display:flex;align-items:center;gap:14px"><span style="width:100px;font-size:.85rem;color:var(--text-secondary)">Qualified</span><div style="flex:1;height:36px;background:var(--bg-primary);border-radius:8px;overflow:hidden"><div style="height:100%;width:65%;background:#8B5CF6;border-radius:8px;display:flex;align-items:center;padding-left:12px;font-size:.8rem;font-weight:600">161</div></div></div>
-                <div style="display:flex;align-items:center;gap:14px"><span style="width:100px;font-size:.85rem;color:var(--text-secondary)">Proposal</span><div style="flex:1;height:36px;background:var(--bg-primary);border-radius:8px;overflow:hidden"><div style="height:100%;width:40%;background:#EC4899;border-radius:8px;display:flex;align-items:center;padding-left:12px;font-size:.8rem;font-weight:600">99</div></div></div>
-                <div style="display:flex;align-items:center;gap:14px"><span style="width:100px;font-size:.85rem;color:var(--text-secondary)">Negotiation</span><div style="flex:1;height:36px;background:var(--bg-primary);border-radius:8px;overflow:hidden"><div style="height:100%;width:25%;background:#F59E0B;border-radius:8px;display:flex;align-items:center;padding-left:12px;font-size:.8rem;font-weight:600">62</div></div></div>
-                <div style="display:flex;align-items:center;gap:14px"><span style="width:100px;font-size:.85rem;color:var(--text-secondary)">Won</span><div style="flex:1;height:36px;background:var(--bg-primary);border-radius:8px;overflow:hidden"><div style="height:100%;width:15%;background:#22C55E;border-radius:8px;display:flex;align-items:center;padding-left:12px;font-size:.8rem;font-weight:600">37</div></div></div>
-            </div>
-        </div>
-        <div class="card" style="margin-top:24px"><div class="card-header"><h3>Top Performers</h3></div>
-            <table class="data-table"><thead><tr><th>Salesperson</th><th>Deals Closed</th><th>Revenue</th><th>Win Rate</th></tr></thead>
-            <tbody>
-                <tr><td><div style="display:flex;align-items:center;gap:10px"><div class="avatar" style="background:#3B82F6">JD</div>James Donovan</div></td><td>18</td><td>$86,400</td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg-primary);border-radius:3px"><div style="height:100%;width:78%;background:#22C55E;border-radius:3px"></div></div><span style="font-size:.8rem;color:var(--text-secondary)">78%</span></div></td></tr>
-                <tr><td><div style="display:flex;align-items:center;gap:10px"><div class="avatar" style="background:#A855F7">SM</div>Sarah Mitchell</div></td><td>15</td><td>$72,300</td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg-primary);border-radius:3px"><div style="height:100%;width:72%;background:#22C55E;border-radius:3px"></div></div><span style="font-size:.8rem;color:var(--text-secondary)">72%</span></div></td></tr>
-                <tr><td><div style="display:flex;align-items:center;gap:10px"><div class="avatar" style="background:#F59E0B">MJ</div>Mike Johnson</div></td><td>12</td><td>$58,900</td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg-primary);border-radius:3px"><div style="height:100%;width:65%;background:#F59E0B;border-radius:3px"></div></div><span style="font-size:.8rem;color:var(--text-secondary)">65%</span></div></td></tr>
-                <tr><td><div style="display:flex;align-items:center;gap:10px"><div class="avatar" style="background:#EC4899">LW</div>Lisa Wang</div></td><td>10</td><td>$45,200</td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg-primary);border-radius:3px"><div style="height:100%;width:60%;background:#F59E0B;border-radius:3px"></div></div><span style="font-size:.8rem;color:var(--text-secondary)">60%</span></div></td></tr>
-                <tr><td><div style="display:flex;align-items:center;gap:10px"><div class="avatar" style="background:#22C55E">RK</div>Robert Kim</div></td><td>8</td><td>$38,600</td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;background:var(--bg-primary);border-radius:3px"><div style="height:100%;width:55%;background:#EF4444;border-radius:3px"></div></div><span style="font-size:.8rem;color:var(--text-secondary)">55%</span></div></td></tr>
-            </tbody></table>
-        </div>
-    </section>
+<!-- ══════════ EMAIL ══════════ -->
+<div class="view" id="view-email">
+<div class="main-header">
+<div><h1>Email</h1><div class="subtitle">Manage your sales communications</div></div>
+<button class="btn btn-primary" onclick="openModal('composeModal')">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+Compose
+</button>
+</div>
+<div class="tabs" id="emailTabs">
+<div class="tab active" data-folder="inbox" onclick="switchEmailTab('inbox')">Inbox<span class="count">8</span></div>
+<div class="tab" data-folder="sent" onclick="switchEmailTab('sent')">Sent<span class="count">2</span></div>
+<div class="tab" data-folder="drafts" onclick="switchEmailTab('drafts')">Drafts<span class="count">1</span></div>
+</div>
+<div class="grid-email">
+<div class="email-list" id="emailList"></div>
+<div class="email-reading" id="emailReading">
+<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);font-size:14px">Select an email to read</div>
+</div>
+</div>
+</div>
 
-    <!-- ───── CALENDAR VIEW ───── -->
-    <section class="view" id="view-calendar">
-        <div class="view-header"><div><h1>Calendar</h1><p>Schedule meetings and follow-ups</p></div>
-        <button class="btn btn-primary btn-sm" onclick="alert('Add Event modal coming soon!')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Event</button></div>
-        <div class="card">
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border)">
-                <button onclick="changeMonth(-1)" style="background:var(--bg-primary);border:1px solid var(--border);color:var(--text-primary);width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:1rem">&lt;</button>
-                <h3 id="calendarMonth" style="font-size:1.1rem"></h3>
-                <button onclick="changeMonth(1)" style="background:var(--bg-primary);border:1px solid var(--border);color:var(--text-primary);width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:1rem">&gt;</button>
-            </div>
-            <div style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;padding:12px 24px;gap:4px">
-                <div style="font-size:.75rem;color:var(--text-muted);font-weight:600;padding:8px">SUN</div>
-                <div style="font-size:.75rem;color:var(--text-muted);font-weight:600;padding:8px">MON</div>
-                <div style="font-size:.75rem;color:var(--text-muted);font-weight:600;padding:8px">TUE</div>
-                <div style="font-size:.75rem;color:var(--text-muted);font-weight:600;padding:8px">WED</div>
-                <div style="font-size:.75rem;color:var(--text-muted);font-weight:600;padding:8px">THU</div>
-                <div style="font-size:.75rem;color:var(--text-muted);font-weight:600;padding:8px">FRI</div>
-                <div style="font-size:.75rem;color:var(--text-muted);font-weight:600;padding:8px">SAT</div>
-            </div>
-            <div id="calendarGrid" style="display:grid;grid-template-columns:repeat(7,1fr);padding:0 24px 24px;gap:4px"></div>
-        </div>
-        <div class="card" style="margin-top:24px" id="calendarEvents">
-            <div class="card-header"><h3>Upcoming Events</h3></div>
-            <div style="padding:16px;display:flex;flex-direction:column;gap:12px" id="eventsList"></div>
-        </div>
-    </section>
-
-    <!-- ───── EMAIL VIEW ───── -->
-    <section class="view" id="view-email">
-        <div class="view-header"><div><h1>Email</h1><p>Manage your communications</p></div>
-        <button class="btn btn-primary btn-sm" onclick="document.getElementById('composeModal').classList.add('show')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Compose</button></div>
-        <div class="filter-bar" style="margin-bottom:20px">
-            <button class="filter-btn active" onclick="filterEmails('inbox',this)">Inbox <span class="badge" style="position:static;margin-left:4px">8</span></button>
-            <button class="filter-btn" onclick="filterEmails('sent',this)">Sent</button>
-            <button class="filter-btn" onclick="filterEmails('draft',this)">Drafts</button>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:20px" id="emailLayout">
-            <div class="card" style="padding:0;overflow:hidden;max-height:600px;overflow-y:auto" id="emailList"></div>
-            <div class="card" id="emailDetail" style="padding:24px"><p style="color:var(--text-muted);text-align:center;padding:60px 0">Select an email to read</p></div>
-        </div>
-    </section>
+<!-- COMPOSE MODAL -->
+<div class="modal-overlay" id="composeModal">
+<div class="modal">
+<h2>New Message</h2>
+<div class="modal-row"><label>To</label><input type="email" placeholder="recipient@example.com"></div>
+<div class="modal-row"><label>Subject</label><input type="text" placeholder="Subject line"></div>
+<div class="modal-row"><label>Message</label><textarea placeholder="Write your message..."></textarea></div>
+<div class="modal-actions">
+<button class="btn btn-ghost" onclick="closeModal('composeModal')">Discard</button>
+<button class="btn btn-primary" onclick="closeModal('composeModal')">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="16" height="16"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+Send
+</button>
+</div>
+</div>
+</div>
 
 </main>
 
-<!-- ───── COMPOSE EMAIL MODAL ───── -->
-<div class="modal-overlay" id="composeModal">
-    <div class="modal">
-        <div class="modal-header"><h2>Compose Email</h2><button class="modal-close" onclick="document.getElementById('composeModal').classList.remove('show')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
-        <div class="modal-body">
-            <div class="form-group"><label>To</label><input type="email" placeholder="recipient@email.com" style="width:100%;padding:10px 14px;background:var(--bg-primary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary)"></div>
-            <div class="form-group"><label>Subject</label><input type="text" placeholder="Email subject..." style="width:100%;padding:10px 14px;background:var(--bg-primary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary)"></div>
-            <div class="form-group"><label>Message</label><textarea rows="8" placeholder="Write your message..." style="width:100%;padding:14px;background:var(--bg-primary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);resize:vertical;font-family:inherit"></textarea></div>
-        </div>
-        <div class="modal-footer"><button class="btn btn-primary" onclick="document.getElementById('composeModal').classList.remove('show');alert('Email sent!')">Send Email</button></div>
-    </div>
-</div>
-
-<!-- ───── ADD CONTACT MODAL ───── -->
-<div class="modal-overlay" id="contactModal">
-    <div class="modal">
-        <div class="modal-header">
-            <h2>Add New Contact</h2>
-            <button class="modal-close" onclick="closeModal('contact')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
-        </div>
-        <form onsubmit="addContact(event)">
-            <div class="modal-body">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>First Name</label>
-                        <input type="text" id="cFirstName" required placeholder="John">
-                    </div>
-                    <div class="form-group">
-                        <label>Last Name</label>
-                        <input type="text" id="cLastName" required placeholder="Doe">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Company</label>
-                    <input type="text" id="cCompany" required placeholder="Acme Corp">
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="cEmail" required placeholder="john@acme.com">
-                </div>
-                <div class="form-group">
-                    <label>Phone</label>
-                    <input type="tel" id="cPhone" placeholder="(555) 123-4567">
-                </div>
-                <div class="form-group">
-                    <label>Status</label>
-                    <select id="cStatus">
-                        <option value="lead">Lead</option>
-                        <option value="prospect">Prospect</option>
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                    </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeModal('contact')">Cancel</button>
-                <button type="submit" class="btn btn-primary">Add Contact</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- ───── ADD DEAL MODAL ───── -->
-<div class="modal-overlay" id="dealModal">
-    <div class="modal">
-        <div class="modal-header">
-            <h2>Add New Deal</h2>
-            <button class="modal-close" onclick="closeModal('deal')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
-        </div>
-        <form onsubmit="addDeal(event)">
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>Deal Name</label>
-                    <input type="text" id="dName" required placeholder="Enterprise License">
-                </div>
-                <div class="form-group">
-                    <label>Company</label>
-                    <input type="text" id="dCompany" required placeholder="Acme Corp">
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Value ($)</label>
-                        <input type="number" id="dValue" required placeholder="25000">
-                    </div>
-                    <div class="form-group">
-                        <label>Probability (%)</label>
-                        <input type="number" id="dProbability" min="0" max="100" required placeholder="50">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Stage</label>
-                    <select id="dStage">
-                        <option value="Lead">Lead</option>
-                        <option value="Qualified">Qualified</option>
-                        <option value="Proposal">Proposal</option>
-                        <option value="Negotiation">Negotiation</option>
-                        <option value="Won">Won</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Contact Person</label>
-                    <input type="text" id="dContact" placeholder="John Doe">
-                </div>
-                <div class="form-group">
-                    <label>Expected Close Date</label>
-                    <input type="date" id="dCloseDate">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeModal('deal')">Cancel</button>
-                <button type="submit" class="btn btn-primary">Add Deal</button>
-            </div>
-        </form>
-    </div>
-</div>
-
 <script>
-// ═══════════════════════════════════════
-// DATA
-// ═══════════════════════════════════════
-
-const avatarColors = [
-    'linear-gradient(135deg,#3B82F6,#8B5CF6)',
-    'linear-gradient(135deg,#22C55E,#06B6D4)',
-    'linear-gradient(135deg,#F59E0B,#EF4444)',
-    'linear-gradient(135deg,#EC4899,#A855F7)',
-    'linear-gradient(135deg,#06B6D4,#3B82F6)',
-    'linear-gradient(135deg,#8B5CF6,#EC4899)',
-    'linear-gradient(135deg,#F97316,#F59E0B)',
-    'linear-gradient(135deg,#14B8A6,#22C55E)',
+// ─── DATA ───
+const contacts = [
+{id:1,first:'Sarah',last:'Chen',company:'Acme Corp',email:'sarah.chen@acme.com',phone:'(555) 234-5678',status:'active',lastContact:'Apr 10, 2026',av:'av-blue'},
+{id:2,first:'Michael',last:'Torres',company:'TechVision Inc',email:'m.torres@techvision.io',phone:'(555) 345-6789',status:'active',lastContact:'Apr 9, 2026',av:'av-purple'},
+{id:3,first:'Emily',last:'Watson',company:'Quantum Solutions',email:'ewatson@quantum.com',phone:'(555) 456-7890',status:'new',lastContact:'Apr 8, 2026',av:'av-green'},
+{id:4,first:'David',last:'Kim',company:'NovaBright Ltd',email:'d.kim@novabright.co',phone:'(555) 567-8901',status:'active',lastContact:'Apr 7, 2026',av:'av-pink'},
+{id:5,first:'Lisa',last:'Park',company:'CloudSync Tech',email:'lisa@cloudsync.io',phone:'(555) 678-9012',status:'active',lastContact:'Apr 6, 2026',av:'av-cyan'},
+{id:6,first:'Robert',last:'Johnson',company:'Meridian Group',email:'r.johnson@meridian.com',phone:'(555) 789-0123',status:'inactive',lastContact:'Mar 28, 2026',av:'av-amber'},
+{id:7,first:'Amanda',last:'Foster',company:'Pinnacle Systems',email:'a.foster@pinnacle.com',phone:'(555) 890-1234',status:'active',lastContact:'Apr 5, 2026',av:'av-red'},
+{id:8,first:'James',last:'Wright',company:'Atlas Dynamics',email:'j.wright@atlas.io',phone:'(555) 901-2345',status:'new',lastContact:'Apr 4, 2026',av:'av-indigo'},
+{id:9,first:'Rachel',last:'Morgan',company:'Vertex Analytics',email:'rachel@vertex.com',phone:'(555) 012-3456',status:'active',lastContact:'Apr 3, 2026',av:'av-blue'},
+{id:10,first:'Kevin',last:'Zhang',company:'Luminary AI',email:'k.zhang@luminary.ai',phone:'(555) 123-4567',status:'active',lastContact:'Apr 2, 2026',av:'av-purple'},
+{id:11,first:'Nicole',last:'Rivera',company:'Sterling & Co',email:'n.rivera@sterling.com',phone:'(555) 234-5670',status:'inactive',lastContact:'Mar 20, 2026',av:'av-green'},
+{id:12,first:'Thomas',last:'Bennett',company:'Horizon Ventures',email:'t.bennett@horizon.vc',phone:'(555) 345-6780',status:'new',lastContact:'Apr 1, 2026',av:'av-pink'},
 ];
 
-let contacts = [
-    { name:'Sarah Chen', company:'TechVista Solutions', email:'sarah.chen@techvista.com', phone:'(555) 234-5678', status:'active', lastContact:'2 hours ago' },
-    { name:'Marcus Rivera', company:'Quantum Dynamics', email:'m.rivera@quantumd.io', phone:'(555) 345-6789', status:'lead', lastContact:'3 hours ago' },
-    { name:'Elena Kowalski', company:'NexGen Robotics', email:'elena.k@nexgenbot.com', phone:'(555) 456-7890', status:'active', lastContact:'Yesterday' },
-    { name:'James Thompson', company:'Horizon Media Group', email:'j.thompson@horizonmg.com', phone:'(555) 567-8901', status:'prospect', lastContact:'Yesterday' },
-    { name:'Aisha Patel', company:'CloudNine SaaS', email:'aisha@cloudnine.io', phone:'(555) 678-9012', status:'active', lastContact:'2 days ago' },
-    { name:'Robert Kim', company:'Apex Manufacturing', email:'r.kim@apexmfg.com', phone:'(555) 789-0123', status:'inactive', lastContact:'1 week ago' },
-    { name:'Lisa Johansson', company:'Nordic Analytics', email:'l.johansson@nordicanalytics.se', phone:'(555) 890-1234', status:'prospect', lastContact:'3 days ago' },
-    { name:'David Park', company:'Stellar Innovations', email:'d.park@stellarinnov.com', phone:'(555) 901-2345', status:'active', lastContact:'4 days ago' },
-    { name:'Maria Santos', company:'Verde Sustainability', email:'maria@verde-sustain.com', phone:'(555) 012-3456', status:'lead', lastContact:'5 days ago' },
-    { name:'Tom Bradley', company:'FinEdge Capital', email:'t.bradley@finedge.com', phone:'(555) 123-4567', status:'active', lastContact:'1 week ago' },
-    { name:'Nina Volkov', company:'Crimson Creative', email:'nina.v@crimsoncreative.co', phone:'(555) 234-5679', status:'lead', lastContact:'2 days ago' },
-    { name:'Chris Nakamura', company:'PacificTrade Co.', email:'c.nakamura@pacifictrade.com', phone:'(555) 345-6780', status:'prospect', lastContact:'6 days ago' },
+const deals = [
+{name:'Enterprise Suite License',company:'Acme Corp',value:85000,stage:'won',prob:100,close:'Apr 10, 2026',owner:'Sarah Chen'},
+{name:'Cloud Migration Package',company:'TechVision Inc',value:62000,stage:'negotiation',prob:75,close:'Apr 30, 2026',owner:'Michael Torres'},
+{name:'Annual SaaS Contract',company:'Quantum Solutions',value:45000,stage:'proposal',prob:50,close:'May 15, 2026',owner:'Emily Watson'},
+{name:'Data Analytics Platform',company:'NovaBright Ltd',value:78000,stage:'qualified',prob:30,close:'Jun 1, 2026',owner:'James Donovan'},
+{name:'Security Compliance Audit',company:'CloudSync Tech',value:32000,stage:'lead',prob:15,close:'Jun 15, 2026',owner:'Lisa Park'},
+{name:'CRM Integration Project',company:'Meridian Group',value:28500,stage:'won',prob:100,close:'Apr 5, 2026',owner:'Sarah Chen'},
+{name:'Marketing Automation',company:'Pinnacle Systems',value:41000,stage:'proposal',prob:55,close:'May 20, 2026',owner:'Michael Torres'},
+{name:'IT Infrastructure Upgrade',company:'Atlas Dynamics',value:56800,stage:'negotiation',prob:80,close:'Apr 25, 2026',owner:'David Kim'},
+{name:'Consulting Retainer',company:'Vertex Analytics',value:24000,stage:'qualified',prob:35,close:'May 30, 2026',owner:'Emily Watson'},
+{name:'AI Implementation',company:'Luminary AI',value:35000,stage:'lead',prob:10,close:'Jul 1, 2026',owner:'James Donovan'},
 ];
 
-let deals = [
-    { name:'Enterprise License', company:'TechVista Solutions', value:32000, stage:'Won', probability:100, contact:'Sarah Chen', closeDate:'2026-03-28' },
-    { name:'Platform Migration', company:'Quantum Dynamics', value:45000, stage:'Lead', probability:20, contact:'Marcus Rivera', closeDate:'2026-06-15' },
-    { name:'Annual Subscription', company:'NexGen Robotics', value:18500, stage:'Negotiation', probability:75, contact:'Elena Kowalski', closeDate:'2026-04-30' },
-    { name:'Marketing Suite', company:'Horizon Media Group', value:27000, stage:'Proposal', probability:50, contact:'James Thompson', closeDate:'2026-05-20' },
-    { name:'Cloud Integration', company:'CloudNine SaaS', value:15000, stage:'Qualified', probability:40, contact:'Aisha Patel', closeDate:'2026-05-10' },
-    { name:'Supply Chain Module', company:'Apex Manufacturing', value:52000, stage:'Lead', probability:15, contact:'Robert Kim', closeDate:'2026-07-01' },
-    { name:'Data Dashboard', company:'Nordic Analytics', value:21000, stage:'Proposal', probability:55, contact:'Lisa Johansson', closeDate:'2026-05-25' },
-    { name:'AI Integration', company:'Stellar Innovations', value:38000, stage:'Qualified', probability:35, contact:'David Park', closeDate:'2026-06-20' },
-    { name:'Sustainability Platform', company:'Verde Sustainability', value:12500, stage:'Lead', probability:10, contact:'Maria Santos', closeDate:'2026-07-15' },
-    { name:'Trading Platform', company:'FinEdge Capital', value:67000, stage:'Negotiation', probability:80, contact:'Tom Bradley', closeDate:'2026-04-20' },
-    { name:'Brand Portal', company:'Crimson Creative', value:9500, stage:'Lead', probability:15, contact:'Nina Volkov', closeDate:'2026-08-01' },
-    { name:'Logistics System', company:'PacificTrade Co.', value:34000, stage:'Proposal', probability:45, contact:'Chris Nakamura', closeDate:'2026-06-01' },
+const pipelineData = {
+lead:[
+{name:'Security Compliance Audit',company:'CloudSync Tech',value:32000,contact:'Lisa Park',prob:15,days:3},
+{name:'AI Implementation',company:'Luminary AI',value:35000,contact:'Kevin Zhang',prob:10,days:1},
+],
+qualified:[
+{name:'Data Analytics Platform',company:'NovaBright Ltd',value:78000,contact:'David Kim',prob:30,days:8},
+{name:'Consulting Retainer',company:'Vertex Analytics',value:24000,contact:'Rachel Morgan',prob:35,days:5},
+],
+proposal:[
+{name:'Annual SaaS Contract',company:'Quantum Solutions',value:45000,contact:'Emily Watson',prob:50,days:12},
+{name:'Marketing Automation',company:'Pinnacle Systems',value:41000,contact:'Amanda Foster',prob:55,days:7},
+],
+negotiation:[
+{name:'Cloud Migration Package',company:'TechVision Inc',value:62000,contact:'Michael Torres',prob:75,days:15},
+{name:'IT Infrastructure Upgrade',company:'Atlas Dynamics',value:56800,contact:'James Wright',prob:80,days:10},
+],
+won:[
+{name:'Enterprise Suite License',company:'Acme Corp',value:85000,contact:'Sarah Chen',prob:100,days:22},
+{name:'CRM Integration Project',company:'Meridian Group',value:28500,contact:'Robert Johnson',prob:100,days:18},
+]
+};
+
+const tasks = [
+{id:1,title:'Follow up with Acme Corp on contract terms',priority:'high',due:'Apr 13, 2026',assignee:'JD',av:'av-blue',status:'todo'},
+{id:2,title:'Prepare Q2 sales forecast presentation',priority:'high',due:'Apr 14, 2026',assignee:'SC',av:'av-purple',status:'inprogress'},
+{id:3,title:'Send proposal to Quantum Solutions',priority:'medium',due:'Apr 15, 2026',assignee:'EW',av:'av-green',status:'todo'},
+{id:4,title:'Review and update CRM pipeline stages',priority:'low',due:'Apr 16, 2026',assignee:'JD',av:'av-blue',status:'done'},
+{id:5,title:'Schedule demo for NovaBright Ltd',priority:'high',due:'Apr 13, 2026',assignee:'MT',av:'av-pink',status:'todo'},
+{id:6,title:'Complete security compliance documentation',priority:'medium',due:'Apr 17, 2026',assignee:'LP',av:'av-cyan',status:'inprogress'},
+{id:7,title:'Update contact information for Meridian Group',priority:'low',due:'Apr 18, 2026',assignee:'DK',av:'av-amber',status:'done'},
+{id:8,title:'Analyze competitor pricing strategies',priority:'medium',due:'Apr 19, 2026',assignee:'SC',av:'av-purple',status:'inprogress'},
+{id:9,title:'Draft email template for cold outreach',priority:'low',due:'Apr 20, 2026',assignee:'EW',av:'av-green',status:'todo'},
+{id:10,title:'Onboard new client Atlas Dynamics',priority:'medium',due:'Apr 14, 2026',assignee:'JD',av:'av-blue',status:'done'},
 ];
 
-// ═══════════════════════════════════════
-// VIEW SWITCHING
-// ═══════════════════════════════════════
+const calendarEvents = [
+{date:'2026-04-13',title:'Client Call - Acme Corp',time:'9:00 AM - 10:00 AM',color:'var(--accent)'},
+{date:'2026-04-13',title:'Team Standup',time:'10:30 AM - 11:00 AM',color:'var(--purple)'},
+{date:'2026-04-14',title:'Demo - NovaBright Ltd',time:'2:00 PM - 3:30 PM',color:'var(--success)'},
+{date:'2026-04-15',title:'Follow-up - TechVision',time:'11:00 AM - 11:30 AM',color:'var(--warning)'},
+{date:'2026-04-16',title:'Pipeline Review Meeting',time:'3:00 PM - 4:00 PM',color:'var(--accent)'},
+{date:'2026-04-18',title:'Lunch with Robert Johnson',time:'12:30 PM - 1:30 PM',color:'var(--pink)'},
+{date:'2026-04-20',title:'Quarterly Sales Review',time:'10:00 AM - 12:00 PM',color:'var(--danger)'},
+{date:'2026-04-22',title:'Product Training Session',time:'9:00 AM - 11:00 AM',color:'var(--cyan)'},
+{date:'2026-04-25',title:'Contract Signing - Atlas',time:'4:00 PM - 5:00 PM',color:'var(--success)'},
+{date:'2026-04-28',title:'Marketing Strategy Sync',time:'1:00 PM - 2:00 PM',color:'var(--purple)'},
+];
 
+const emails = {
+inbox:[
+{id:1,from:'Sarah Chen',email:'sarah.chen@acme.com',subject:'Re: Enterprise Suite - Contract Ready',preview:'Hi James, the legal team has approved the contract terms. We are ready to proceed with the signing...','time':'10:30 AM',unread:true,av:'av-blue',body:'<p>Hi James,</p><p>The legal team has approved the contract terms. We are ready to proceed with the signing this week. Could you send over the final version of the SOW?</p><p>Also, I wanted to discuss the implementation timeline. Our CTO is available for a call on Thursday if that works for your team.</p><p>Best regards,<br>Sarah Chen<br>VP of Operations, Acme Corp</p>'},
+{id:2,from:'Michael Torres',email:'m.torres@techvision.io',subject:'Cloud Migration - Updated Timeline',preview:'James, following our discussion last week, I have revised the project timeline to reflect...','time':'9:15 AM',unread:true,av:'av-purple',body:'<p>James,</p><p>Following our discussion last week, I have revised the project timeline to reflect the new requirements. The updated Gantt chart is attached.</p><p>Key changes:<br>- Phase 1 completion moved to May 15<br>- Added 2 weeks buffer for testing<br>- UAT scheduled for June 1-14</p><p>Let me know your thoughts.<br>Michael Torres</p>'},
+{id:3,from:'Emily Watson',email:'ewatson@quantum.com',subject:'Proposal Questions - Need Clarification',preview:'Hi James, we reviewed the proposal and have a few questions about the pricing structure...','time':'Yesterday',unread:true,av:'av-green',body:'<p>Hi James,</p><p>We reviewed the proposal and have a few questions about the pricing structure:</p><p>1. Is the volume discount applicable from Year 1?<br>2. What are the SLA guarantees for uptime?<br>3. Can we add additional users mid-contract?</p><p>Looking forward to your response.<br>Emily Watson</p>'},
+{id:4,from:'David Kim',email:'d.kim@novabright.co',subject:'Demo Scheduled for Tuesday',preview:'Confirming our product demo is set for Tuesday at 2:00 PM. Our team of 5 will be attending...','time':'Yesterday',unread:false,av:'av-pink',body:'<p>Hi James,</p><p>Confirming our product demo is set for Tuesday at 2:00 PM. Our team of 5 will be attending:</p><p>- David Kim (CTO)<br>- Maria Lopez (VP Engineering)<br>- Tom Hardy (Lead Architect)<br>- Priya Patel (Security Lead)<br>- Alex Chen (DevOps Manager)</p><p>Please send the meeting link when ready.<br>David Kim</p>'},
+{id:5,from:'Lisa Park',email:'lisa@cloudsync.io',subject:'Security Assessment Results',preview:'James, the initial security assessment is complete. I am pleased to report that we found no critical...','time':'Apr 9',unread:true,av:'av-cyan',body:'<p>James,</p><p>The initial security assessment is complete. I am pleased to report that we found no critical vulnerabilities. However, there are 3 medium-priority items that need attention before we proceed.</p><p>I have attached the full report. Can we schedule a review session this week?</p><p>Thanks,<br>Lisa Park</p>'},
+{id:6,from:'Robert Johnson',email:'r.johnson@meridian.com',subject:'Partnership Opportunity',preview:'I wanted to reach out regarding a potential partnership between our organizations...','time:'Apr 8',unread:false,av:'av-amber',body:'<p>Dear James,</p><p>I wanted to reach out regarding a potential partnership between our organizations. Meridian Group has been expanding into new markets, and we believe your CRM solution could be a great fit.</p><p>Would you be open to an exploratory call next week?</p><p>Best,<br>Robert Johnson<br>CEO, Meridian Group</p>'},
+{id:7,from:'Amanda Foster',email:'a.foster@pinnacle.com',subject:'Re: Marketing Automation Setup',preview:'Thanks for the detailed walkthrough yesterday. The team is excited about the automation capabilities...','time':'Apr 7',unread:true,av:'av-red',body:'<p>Thanks for the detailed walkthrough yesterday. The team is excited about the automation capabilities.</p><p>A few follow-ups:<br>- Can we integrate with our existing Marketo instance?<br>- What is the typical onboarding timeline?<br>- Do you offer dedicated support during setup?</p><p>Amanda Foster<br>CMO, Pinnacle Systems</p>'},
+{id:8,from:'Kevin Zhang',email:'k.zhang@luminary.ai',subject:'AI Integration Discussion',preview:'James, I have been thinking about our conversation regarding AI-powered lead scoring...','time':'Apr 6',unread:true,av:'av-indigo',body:'<p>James,</p><p>I have been thinking about our conversation regarding AI-powered lead scoring. Luminary AI has developed some impressive models that could significantly improve your conversion rates.</p><p>I would love to set up a technical deep-dive with your engineering team. We can show real results from our pilot programs.</p><p>Cheers,<br>Kevin Zhang<br>Founder & CEO, Luminary AI</p>'},
+],
+sent:[
+{id:101,from:'You',email:'james@salescrm.com',subject:'Re: Partnership Opportunity',preview:'Robert, thank you for reaching out. I would be happy to explore partnership opportunities...','time':'Apr 9',unread:false,av:'av-blue',body:'<p>Robert,</p><p>Thank you for reaching out. I would be happy to explore partnership opportunities with Meridian Group.</p><p>I have some availability next Tuesday and Thursday. Which works better for a 30-minute call?</p><p>Best,<br>James Donovan<br>Sales Manager, SalesCRM</p>'},
+{id:102,from:'You',email:'james@salescrm.com',subject:'Q1 Results Summary',preview:'Team, attached is the Q1 sales performance summary. Highlights include 18% revenue growth...','time':'Apr 1',unread:false,av:'av-blue',body:'<p>Team,</p><p>Attached is the Q1 sales performance summary. Key highlights:</p><p>- 18% revenue growth YoY<br>- 12 new enterprise clients<br>- NPS score improved to 72<br>- Average deal size up 15%</p><p>Great work everyone. Let us keep the momentum going into Q2!</p><p>James</p>'},
+],
+drafts:[
+{id:201,from:'Draft',email:'',subject:'Follow-up: Consulting Proposal for Vertex Analytics',preview:'Hi Rachel, I wanted to follow up on the consulting proposal we discussed last week...','time':'Apr 10',unread:false,av:'av-purple',body:'<p>Hi Rachel,</p><p>I wanted to follow up on the consulting proposal we discussed last week. Our team has put together a comprehensive plan that addresses all your requirements.</p><p>[Draft - continue writing...]</p>'},
+]
+};
+
+// ─── NAVIGATION ───
 function switchView(view) {
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.querySelectorAll('.nav-item[data-view]').forEach(n => n.classList.remove('active'));
-
-    document.getElementById('view-' + view).classList.add('active');
-    const navItem = document.querySelector(`.nav-item[data-view="${view}"]`);
-    if (navItem) navItem.classList.add('active');
-
-    // Close mobile sidebar
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('open');
-
-    if (view === 'contacts') renderContacts();
-    if (view === 'deals') renderDealsTable();
-    if (view === 'pipeline') renderPipeline();
+document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+document.getElementById('view-' + view)?.classList.add('active');
+document.querySelector(`.nav-item[data-view="${view}"]`)?.classList.add('active');
+if(window.innerWidth < 768) { sidebar.classList.remove('open'); overlay.classList.remove('show'); }
+// render charts when switching views
+if(view === 'dashboard') renderDashboardCharts();
+if(view === 'reports') renderReportsCharts();
+if(view === 'calendar') renderCalendar();
+if(view === 'email') renderEmails('inbox');
+if(view === 'pipeline') renderPipeline();
 }
 
 function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('sidebarOverlay').classList.toggle('open');
+const sb = document.getElementById('sidebar');
+const ov = document.getElementById('overlay');
+sb.classList.toggle('open');
+ov.classList.toggle('show');
 }
 
-// ═══════════════════════════════════════
-// CONTACTS
-// ═══════════════════════════════════════
+// ─── MODALS ───
+function openModal(id) { const m=document.getElementById(id);m.classList.add('show');setTimeout(()=>m.style.opacity='1',10); }
+function closeModal(id) { const m=document.getElementById(id);m.classList.remove('show'); }
 
-function renderContacts(filtered) {
-    const data = filtered || contacts;
-    const tbody = document.getElementById('contactsBody');
-    tbody.innerHTML = data.map((c, i) => {
-        const initials = c.name.split(' ').map(n => n[0]).join('');
-        const bg = avatarColors[i % avatarColors.length];
-        return `<tr>
-            <td><div class="contact-name"><div class="contact-avatar" style="background:${bg}">${initials}</div>${c.name}</div></td>
-            <td>${c.company}</td>
-            <td style="color:var(--text-secondary)">${c.email}</td>
-            <td style="color:var(--text-secondary)">${c.phone}</td>
-            <td><span class="status-badge ${c.status}">${c.status.charAt(0).toUpperCase() + c.status.slice(1)}</span></td>
-            <td style="color:var(--text-muted)">${c.lastContact}</td>
-            <td>
-                <div class="action-btns">
-                    <button class="action-btn" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-                    <button class="action-btn" title="Delete" onclick="deleteContact(${contacts.indexOf(c)})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-                </div>
-            </td>
-        </tr>`;
-    }).join('');
+// ─── CONTACTS ───
+function renderContacts(data) {
+const body = document.getElementById('contactsBody');
+body.innerHTML = data.map(c => `
+<tr>
+<td><input type="checkbox"></td>
+<td><div class="td-name"><div class="avatar ${c.av}">${c.first[0]}${c.last[0]}</div>${c.first} ${c.last}</div></td>
+<td>${c.company}</td>
+<td style="color:var(--text-secondary)">${c.email}</td>
+<td style="color:var(--text-secondary)">${c.phone}</td>
+<td><span class="badge badge-${c.status}">${c.status.charAt(0).toUpperCase()+c.status.slice(1)}</span></td>
+<td style="color:var(--text-muted)">${c.lastContact}</td>
+<td><div class="td-actions">
+<button title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+<button title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+</div></td>
+</tr>
+`).join('');
 }
 
 function filterContacts() {
-    const search = document.getElementById('contactSearch').value.toLowerCase();
-    const status = document.getElementById('statusFilter').value;
-    let filtered = contacts.filter(c => {
-        const matchSearch = !search || c.name.toLowerCase().includes(search) || c.company.toLowerCase().includes(search) || c.email.toLowerCase().includes(search);
-        const matchStatus = status === 'all' || c.status === status;
-        return matchSearch && matchStatus;
-    });
-    renderContacts(filtered);
+const search = document.getElementById('contactSearch').value.toLowerCase();
+const status = document.getElementById('contactStatusFilter').value;
+let filtered = contacts.filter(c => {
+const matchSearch = !search || `${c.first} ${c.last} ${c.company} ${c.email}`.toLowerCase().includes(search);
+const matchStatus = !status || c.status === status;
+return matchSearch && matchStatus;
+});
+renderContacts(filtered);
 }
 
-function deleteContact(index) {
-    contacts.splice(index, 1);
-    filterContacts();
+function toggleAllContacts(cb) {
+document.querySelectorAll('#contactsBody input[type="checkbox"]').forEach(c => c.checked = cb.checked);
 }
 
-function addContact(e) {
-    e.preventDefault();
-    const contact = {
-        name: document.getElementById('cFirstName').value + ' ' + document.getElementById('cLastName').value,
-        company: document.getElementById('cCompany').value,
-        email: document.getElementById('cEmail').value,
-        phone: document.getElementById('cPhone').value || '(555) 000-0000',
-        status: document.getElementById('cStatus').value,
-        lastContact: 'Just now'
-    };
-    contacts.unshift(contact);
-    closeModal('contact');
-    e.target.reset();
-    if (document.getElementById('view-contacts').classList.contains('active')) {
-        filterContacts();
-    }
+// ─── DEALS ───
+function renderDeals() {
+document.getElementById('dealsBody').innerHTML = deals.map(d => `
+<tr>
+<td style="font-weight:600">${d.name}</td>
+<td>${d.company}</td>
+<td style="font-weight:600">$${d.value.toLocaleString()}</td>
+<td><span class="badge badge-${d.stage}">${d.stage.charAt(0).toUpperCase()+d.stage.slice(1)}</span></td>
+<td>${d.prob}%</td>
+<td style="color:var(--text-muted)">${d.close}</td>
+<td>${d.owner}</td>
+</tr>
+`).join('');
 }
 
-// ═══════════════════════════════════════
-// DEALS TABLE
-// ═══════════════════════════════════════
-
-function renderDealsTable() {
-    const tbody = document.getElementById('dealsBody');
-    tbody.innerHTML = deals.map(d => {
-        const probClass = d.probability >= 60 ? 'high' : d.probability >= 30 ? 'medium' : 'low';
-        const stageColors = { Lead:'var(--accent)', Qualified:'var(--purple)', Proposal:'var(--warning)', Negotiation:'#F97316', Won:'var(--success)' };
-        return `<tr>
-            <td style="font-weight:600">${d.name}</td>
-            <td>${d.company}</td>
-            <td style="font-weight:600;color:var(--accent)">$${d.value.toLocaleString()}</td>
-            <td><span style="color:${stageColors[d.stage] || 'var(--text-secondary)'};font-weight:600">${d.stage}</span></td>
-            <td><span class="deal-probability ${probClass}">${d.probability}%</span></td>
-            <td style="color:var(--text-secondary)">${d.contact}</td>
-            <td style="color:var(--text-muted)">${d.closeDate}</td>
-        </tr>`;
-    }).join('');
-}
-
-function addDeal(e) {
-    e.preventDefault();
-    const deal = {
-        name: document.getElementById('dName').value,
-        company: document.getElementById('dCompany').value,
-        value: parseInt(document.getElementById('dValue').value),
-        probability: parseInt(document.getElementById('dProbability').value),
-        stage: document.getElementById('dStage').value,
-        contact: document.getElementById('dContact').value || 'Unassigned',
-        closeDate: document.getElementById('dCloseDate').value || '2026-06-30'
-    };
-    deals.unshift(deal);
-    closeModal('deal');
-    e.target.reset();
-
-    if (document.getElementById('view-deals').classList.contains('active')) renderDealsTable();
-    if (document.getElementById('view-pipeline').classList.contains('active')) renderPipeline();
-}
-
-// ═══════════════════════════════════════
-// PIPELINE (KANBAN)
-// ═══════════════════════════════════════
-
-const stages = ['Lead', 'Qualified', 'Proposal', 'Negotiation', 'Won'];
-
+// ─── PIPELINE ───
 function renderPipeline() {
-    const board = document.getElementById('pipelineBoard');
-    board.innerHTML = stages.map(stage => {
-        const stageDeals = deals.filter(d => d.stage === stage);
-        const totalValue = stageDeals.reduce((sum, d) => sum + d.value, 0);
-        return `
-        <div class="pipeline-column">
-            <div class="pipeline-column-header">
-                <h4>${stage} <span style="color:var(--text-muted);font-weight:400;font-size:12px">- $${totalValue.toLocaleString()}</span></h4>
-                <span class="count">${stageDeals.length}</span>
-            </div>
-            <div class="pipeline-cards" data-stage="${stage}"
-                 ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-                ${stageDeals.map((d, i) => {
-                    const probClass = d.probability >= 60 ? 'high' : d.probability >= 30 ? 'medium' : 'low';
-                    const dealIdx = deals.indexOf(d);
-                    return `<div class="deal-card" draggable="true"
-                                ondragstart="handleDragStart(event, ${dealIdx})"
-                                ondragend="handleDragEnd(event)">
-                        <div class="deal-card-company">${d.company}</div>
-                        <div class="deal-card-value">$${d.value.toLocaleString()}</div>
-                        <div class="deal-card-contact">${d.contact}</div>
-                        <div class="deal-card-footer">
-                            <span class="deal-probability ${probClass}">${d.probability}%</span>
-                            <span class="deal-card-date">${d.closeDate}</span>
-                        </div>
-                    </div>`;
-                }).join('')}
-            </div>
-        </div>`;
-    }).join('');
+const board = document.getElementById('pipelineBoard');
+const stageNames = {lead:'Lead',qualified:'Qualified',proposal:'Proposal',negotiation:'Negotiation',won:'Won'};
+const stageColors = {lead:'var(--accent)',qualified:'var(--purple)',proposal:'var(--warning)',negotiation:'var(--pink)',won:'var(--success)'};
+board.innerHTML = Object.entries(pipelineData).map(([stage, cards]) => {
+const total = cards.reduce((s,c)=>s+c.value,0);
+return `
+<div class="pipeline-col" data-stage="${stage}" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropCard(event,this)">
+<div class="pipeline-header">
+<h3>${stageNames[stage]}</h3>
+<div class="meta">${cards.length} deals &middot; $${total.toLocaleString()}</div>
+</div>
+<div class="pipeline-cards">
+${cards.map((c,i) => `
+<div class="pipeline-card" draggable="true" data-stage="${stage}" data-index="${i}" ondragstart="dragCard(event)">
+<div class="deal-name">${c.company}</div>
+<div class="deal-value">$${c.value.toLocaleString()}</div>
+<div class="deal-contact">${c.contact}</div>
+<div class="prob-bar"><div class="prob-fill" style="width:${c.prob}%;background:${stageColors[stage]}"></div></div>
+<div class="deal-days">${c.days} days in stage</div>
+</div>
+`).join('')}
+</div>
+</div>`;
+}).join('');
 }
 
-let dragDealIndex = null;
-
-function handleDragStart(e, index) {
-    dragDealIndex = index;
-    e.target.classList.add('dragging');
-    e.dataTransfer.effectAllowed = 'move';
+let draggedCard = null;
+function dragCard(e) {
+draggedCard = {stage:e.target.dataset.stage, index:parseInt(e.target.dataset.index)};
+e.target.classList.add('dragging');
+e.dataTransfer.effectAllowed = 'move';
+}
+function dropCard(e, col) {
+e.preventDefault();
+col.classList.remove('drag-over');
+if(!draggedCard) return;
+const targetStage = col.dataset.stage;
+const card = pipelineData[draggedCard.stage].splice(draggedCard.index, 1)[0];
+card.days = 0;
+const probMap = {lead:15,qualified:35,proposal:55,negotiation:80,won:100};
+card.prob = probMap[targetStage];
+pipelineData[targetStage].push(card);
+draggedCard = null;
+renderPipeline();
 }
 
-function handleDragEnd(e) {
-    e.target.classList.remove('dragging');
-    document.querySelectorAll('.pipeline-cards').forEach(c => c.classList.remove('drag-over'));
+// ─── TASKS ───
+function renderTasks(filter='all') {
+const list = document.getElementById('tasksList');
+const filtered = filter === 'all' ? tasks : tasks.filter(t => t.status === filter);
+list.innerHTML = filtered.map(t => `
+<div class="task-item ${t.status==='done'?'completed':''}">
+<input type="checkbox" ${t.status==='done'?'checked':''} onchange="toggleTask(${t.id})">
+<div class="task-title">${t.title}</div>
+<div class="task-meta">
+<span class="badge badge-${t.priority}">${t.priority.charAt(0).toUpperCase()+t.priority.slice(1)}</span>
+<span class="task-due">${t.due}</span>
+<div class="avatar task-assignee ${t.av}">${t.assignee}</div>
+<span class="badge badge-${t.status}">${t.status==='todo'?'To Do':t.status==='inprogress'?'In Progress':'Done'}</span>
+</div>
+</div>
+`).join('');
+// update counts
+document.getElementById('countAll').textContent = tasks.length;
+document.getElementById('countTodo').textContent = tasks.filter(t=>t.status==='todo').length;
+document.getElementById('countProgress').textContent = tasks.filter(t=>t.status==='inprogress').length;
+document.getElementById('countDone').textContent = tasks.filter(t=>t.status==='done').length;
 }
 
-function handleDragOver(e) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    e.currentTarget.classList.add('drag-over');
-}
-
-function handleDragLeave(e) {
-    e.currentTarget.classList.remove('drag-over');
-}
-
-function handleDrop(e) {
-    e.preventDefault();
-    e.currentTarget.classList.remove('drag-over');
-    const newStage = e.currentTarget.dataset.stage;
-    if (dragDealIndex !== null && deals[dragDealIndex]) {
-        deals[dragDealIndex].stage = newStage;
-        // update probability based on stage
-        const probMap = { Lead: 15, Qualified: 35, Proposal: 50, Negotiation: 75, Won: 100 };
-        deals[dragDealIndex].probability = probMap[newStage] || deals[dragDealIndex].probability;
-        renderPipeline();
-    }
-    dragDealIndex = null;
-}
-
-// ═══════════════════════════════════════
-// MODALS
-// ═══════════════════════════════════════
-
-function openModal(type) {
-    document.getElementById(type + 'Modal').classList.add('show');
-}
-
-function closeModal(type) {
-    document.getElementById(type + 'Modal').classList.remove('show');
-}
-
-// Close modal on backdrop click
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    overlay.addEventListener('click', e => {
-        if (e.target === overlay) {
-            overlay.classList.remove('show');
-        }
-    });
-});
-
-// Close modals with Escape
-document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-        document.querySelectorAll('.modal-overlay.show').forEach(m => m.classList.remove('show'));
-    }
-});
-
-// ═══════════════════════════════════════
-// GLOBAL SEARCH
-// ═══════════════════════════════════════
-
-function handleGlobalSearch(query) {
-    if (!query.trim()) return;
-    const q = query.toLowerCase();
-    const contactMatch = contacts.some(c => c.name.toLowerCase().includes(q) || c.company.toLowerCase().includes(q));
-    if (contactMatch) {
-        switchView('contacts');
-        document.getElementById('contactSearch').value = query;
-        filterContacts();
-    }
-}
-
-// ═══════════════════════════════════════
-// CHARTS
-// ═══════════════════════════════════════
-
-function initCharts() {
-    // Revenue Line Chart
-    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-    new Chart(revenueCtx, {
-        type: 'line',
-        data: {
-            labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
-            datasets: [{
-                label: 'Revenue',
-                data: [65000, 72000, 81000, 95000, 110000, 124500],
-                borderColor: '#3B82F6',
-                backgroundColor: 'rgba(59,130,246,0.1)',
-                borderWidth: 3,
-                fill: true,
-                tension: 0.4,
-                pointBackgroundColor: '#3B82F6',
-                pointBorderColor: '#1E293B',
-                pointBorderWidth: 3,
-                pointRadius: 5,
-                pointHoverRadius: 7,
-            }, {
-                label: 'Target',
-                data: [60000, 70000, 80000, 90000, 100000, 115000],
-                borderColor: '#64748B',
-                borderWidth: 2,
-                borderDash: [6, 4],
-                fill: false,
-                tension: 0.4,
-                pointRadius: 0,
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top',
-                    align: 'end',
-                    labels: { color: '#94A3B8', usePointStyle: true, pointStyle: 'circle', padding: 20, font: { size: 12, family: 'Inter' } }
-                },
-                tooltip: {
-                    backgroundColor: '#1E293B',
-                    titleColor: '#F1F5F9',
-                    bodyColor: '#94A3B8',
-                    borderColor: '#334155',
-                    borderWidth: 1,
-                    padding: 12,
-                    cornerRadius: 8,
-                    callbacks: {
-                        label: ctx => ' $' + ctx.parsed.y.toLocaleString()
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    grid: { color: 'rgba(51,65,85,0.3)', drawBorder: false },
-                    ticks: { color: '#64748B', font: { size: 12, family: 'Inter' } }
-                },
-                y: {
-                    grid: { color: 'rgba(51,65,85,0.3)', drawBorder: false },
-                    ticks: {
-                        color: '#64748B',
-                        font: { size: 12, family: 'Inter' },
-                        callback: v => '$' + (v / 1000) + 'k'
-                    }
-                }
-            },
-            interaction: { intersect: false, mode: 'index' }
-        }
-    });
-
-    // Deals Donut Chart
-    const dealsCtx = document.getElementById('dealsChart').getContext('2d');
-    new Chart(dealsCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Prospecting', 'Qualification', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'],
-            datasets: [{
-                data: [18, 12, 15, 8, 12, 5],
-                backgroundColor: ['#3B82F6', '#A855F7', '#F59E0B', '#F97316', '#22C55E', '#EF4444'],
-                borderColor: '#1E293B',
-                borderWidth: 3,
-                hoverBorderColor: '#1E293B',
-                hoverOffset: 8,
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '65%',
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        color: '#94A3B8',
-                        usePointStyle: true,
-                        pointStyle: 'circle',
-                        padding: 16,
-                        font: { size: 12, family: 'Inter' }
-                    }
-                },
-                tooltip: {
-                    backgroundColor: '#1E293B',
-                    titleColor: '#F1F5F9',
-                    bodyColor: '#94A3B8',
-                    borderColor: '#334155',
-                    borderWidth: 1,
-                    padding: 12,
-                    cornerRadius: 8,
-                }
-            }
-        }
-    });
-}
-
-// ═══════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════
-
-// ═══════════════════════════════════════
-// TASKS
-// ═══════════════════════════════════════
-const tasks = [
-    { id:1, title:'Follow up with Acme Corp proposal', assignee:'JD', priority:'High', due:'2026-04-14', status:'todo', done:false },
-    { id:2, title:'Prepare Q2 sales presentation', assignee:'SM', priority:'High', due:'2026-04-15', status:'progress', done:false },
-    { id:3, title:'Update CRM contact records', assignee:'MJ', priority:'Medium', due:'2026-04-16', status:'todo', done:false },
-    { id:4, title:'Send pricing to GlobalTech', assignee:'JD', priority:'High', due:'2026-04-13', status:'progress', done:false },
-    { id:5, title:'Schedule demo with Beta Inc', assignee:'LW', priority:'Medium', due:'2026-04-17', status:'todo', done:false },
-    { id:6, title:'Review contract terms - DataFlow', assignee:'SM', priority:'Low', due:'2026-04-18', status:'todo', done:false },
-    { id:7, title:'Onboard new client NexGen', assignee:'RK', priority:'Medium', due:'2026-04-20', status:'progress', done:false },
-    { id:8, title:'Cold call list - 20 prospects', assignee:'MJ', priority:'Low', due:'2026-04-19', status:'done', done:true },
-    { id:9, title:'Update pipeline forecast', assignee:'JD', priority:'Medium', due:'2026-04-14', status:'todo', done:false },
-    { id:10, title:'Client satisfaction survey', assignee:'LW', priority:'Low', due:'2026-04-21', status:'done', done:true },
-];
-let taskFilter = 'all';
-
-function renderTasks() {
-    const filtered = taskFilter === 'all' ? tasks : tasks.filter(t => t.status === (taskFilter === 'todo' ? 'todo' : taskFilter === 'progress' ? 'progress' : 'done'));
-    const list = document.getElementById('tasksList');
-    const priorityColors = { High:'#EF4444', Medium:'#F59E0B', Low:'#22C55E' };
-    const statusLabels = { todo:'To Do', progress:'In Progress', done:'Done' };
-    const statusColors = { todo:'#3B82F6', progress:'#F59E0B', done:'#22C55E' };
-    list.innerHTML = filtered.map(t => `
-        <div style="display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);${t.done?'opacity:0.5':''}">
-            <input type="checkbox" ${t.done?'checked':''} onchange="toggleTask(${t.id})" style="width:18px;height:18px;accent-color:#3B82F6;cursor:pointer">
-            <div style="flex:1;min-width:0"><div style="font-weight:500;${t.done?'text-decoration:line-through;color:var(--text-muted)':''}">${t.title}</div>
-            <div style="font-size:.8rem;color:var(--text-muted);margin-top:4px">Due: ${t.due}</div></div>
-            <span style="padding:4px 10px;border-radius:50px;font-size:.7rem;font-weight:600;background:${priorityColors[t.priority]}20;color:${priorityColors[t.priority]}">${t.priority}</span>
-            <span style="padding:4px 10px;border-radius:50px;font-size:.7rem;font-weight:600;background:${statusColors[t.status]}20;color:${statusColors[t.status]}">${statusLabels[t.status]}</span>
-            <div class="avatar" style="width:32px;height:32px;font-size:.7rem;background:#3B82F6">${t.assignee}</div>
-        </div>`).join('') || '<p style="padding:40px;text-align:center;color:var(--text-muted)">No tasks found</p>';
+function filterTasks(filter) {
+document.querySelectorAll('#taskTabs .tab').forEach(t => t.classList.toggle('active', t.dataset.filter===filter));
+renderTasks(filter);
 }
 
 function toggleTask(id) {
-    const t = tasks.find(x=>x.id===id);
-    t.done = !t.done;
-    t.status = t.done ? 'done' : 'todo';
-    renderTasks();
+const t = tasks.find(x=>x.id===id);
+if(t) t.status = t.status==='done' ? 'todo' : 'done';
+const activeTab = document.querySelector('#taskTabs .tab.active')?.dataset.filter || 'all';
+renderTasks(activeTab);
 }
 
-function filterTasks(f, btn) {
-    taskFilter = f;
-    document.querySelectorAll('#view-tasks .filter-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    renderTasks();
+function toggleAddTask() {
+const f = document.getElementById('addTaskForm');
+f.style.display = f.style.display === 'none' ? 'block' : 'none';
 }
 
 function addTask() {
-    const title = document.getElementById('newTaskTitle').value.trim();
-    if (!title) return;
-    tasks.unshift({ id:Date.now(), title, assignee:'JD', priority:document.getElementById('newTaskPriority').value, due:document.getElementById('newTaskDue').value||'2026-04-20', status:'todo', done:false });
-    document.getElementById('newTaskTitle').value = '';
-    renderTasks();
+const title = document.getElementById('newTaskTitle').value.trim();
+if(!title) return;
+const priority = document.getElementById('newTaskPriority').value;
+tasks.unshift({id:Date.now(),title,priority,due:'Apr 20, 2026',assignee:'JD',av:'av-blue',status:'todo'});
+document.getElementById('newTaskTitle').value = '';
+document.getElementById('addTaskForm').style.display = 'none';
+renderTasks('all');
+document.querySelector('#taskTabs .tab[data-filter="all"]').click();
 }
 
-// ═══════════════════════════════════════
-// REPORTS CHARTS
-// ═══════════════════════════════════════
-function initReportCharts() {
-    const barCtx = document.getElementById('revenueBarChart');
-    if (!barCtx) return;
-    new Chart(barCtx.getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: ['Jan','Feb','Mar','Apr','May','Jun'],
-            datasets: [{ label:'Revenue', data: [28500,35200,42800,31400,38900,36700], backgroundColor: ['#3B82F6','#3B82F6','#22C55E','#3B82F6','#3B82F6','#3B82F6'], borderRadius: 8, barThickness: 40 }]
-        },
-        options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#1E293B', titleColor:'#F1F5F9', bodyColor:'#94A3B8', borderColor:'#334155', borderWidth:1, padding:12, cornerRadius:8, callbacks:{ label: ctx=>'$'+ctx.raw.toLocaleString() } } }, scales:{ x:{ grid:{display:false}, ticks:{color:'#64748B'} }, y:{ grid:{color:'rgba(51,65,85,0.3)'}, ticks:{color:'#64748B', callback:v=>'$'+(v/1000)+'k'} } } }
-    });
-
-    new Chart(document.getElementById('winLossChart').getContext('2d'), {
-        type: 'doughnut',
-        data: { labels:['Won','Lost','Pending'], datasets:[{ data:[37,12,21], backgroundColor:['#22C55E','#EF4444','#F59E0B'], borderColor:'#1E293B', borderWidth:3 }] },
-        options: { responsive:true, maintainAspectRatio:false, cutout:'60%', plugins:{ legend:{ position:'bottom', labels:{ color:'#94A3B8', usePointStyle:true, pointStyle:'circle', padding:16 } } } }
-    });
-}
-
-// ═══════════════════════════════════════
-// CALENDAR
-// ═══════════════════════════════════════
-let calendarDate = new Date(2026, 3, 1); // April 2026
-const calendarEvents = [
-    { date:'2026-04-03', title:'Demo with Acme Corp', time:'10:00 AM', type:'demo', color:'#3B82F6' },
-    { date:'2026-04-05', title:'Team standup', time:'9:00 AM', type:'meeting', color:'#A855F7' },
-    { date:'2026-04-07', title:'Follow up - GlobalTech', time:'2:00 PM', type:'followup', color:'#F59E0B' },
-    { date:'2026-04-10', title:'Q2 planning meeting', time:'11:00 AM', type:'meeting', color:'#A855F7' },
-    { date:'2026-04-12', title:'Client lunch - Beta Inc', time:'12:30 PM', type:'meeting', color:'#22C55E' },
-    { date:'2026-04-14', title:'Product demo - NexGen', time:'3:00 PM', type:'demo', color:'#3B82F6' },
-    { date:'2026-04-17', title:'Contract review call', time:'10:30 AM', type:'followup', color:'#F59E0B' },
-    { date:'2026-04-20', title:'Sales training workshop', time:'9:00 AM', type:'meeting', color:'#EC4899' },
-    { date:'2026-04-22', title:'Pipeline review', time:'4:00 PM', type:'meeting', color:'#A855F7' },
-    { date:'2026-04-25', title:'Follow up - DataFlow deal', time:'11:00 AM', type:'followup', color:'#F59E0B' },
-];
+// ─── CALENDAR ───
+let calMonth = 3; // April (0-indexed)
+let calYear = 2026;
+let selectedDate = null;
 
 function renderCalendar() {
-    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-    document.getElementById('calendarMonth').textContent = months[calendarDate.getMonth()] + ' ' + calendarDate.getFullYear();
-    const grid = document.getElementById('calendarGrid');
-    const firstDay = new Date(calendarDate.getFullYear(), calendarDate.getMonth(), 1).getDay();
-    const daysInMonth = new Date(calendarDate.getFullYear(), calendarDate.getMonth()+1, 0).getDate();
-    const today = new Date();
-    let html = '';
-    for (let i=0; i<firstDay; i++) html += '<div></div>';
-    for (let d=1; d<=daysInMonth; d++) {
-        const dateStr = `${calendarDate.getFullYear()}-${String(calendarDate.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        const evts = calendarEvents.filter(e=>e.date===dateStr);
-        const isToday = today.getDate()===d && today.getMonth()===calendarDate.getMonth() && today.getFullYear()===calendarDate.getFullYear();
-        html += `<div onclick="showDayEvents('${dateStr}')" style="padding:10px 4px;text-align:center;border-radius:10px;cursor:pointer;font-size:.9rem;transition:all .2s;${isToday?'background:#3B82F6;color:#fff;font-weight:700':'color:var(--text-primary)'}" onmouseenter="this.style.background=this.style.background||'var(--bg-primary)'" onmouseleave="this.style.background='${isToday?'#3B82F6':''}'">
-            ${d}${evts.length?`<div style="display:flex;justify-content:center;gap:3px;margin-top:4px">${evts.map(e=>`<div style="width:6px;height:6px;border-radius:50%;background:${e.color}"></div>`).join('')}</div>`:''}
-        </div>`;
-    }
-    grid.innerHTML = html;
-    renderEvents();
+const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+document.getElementById('calTitle').textContent = `${monthNames[calMonth]} ${calYear}`;
+const grid = document.getElementById('calGrid');
+const dayHeaders = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const firstDay = new Date(calYear, calMonth, 1).getDay();
+const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+const daysInPrev = new Date(calYear, calMonth, 0).getDate();
+const today = new Date();
+
+let html = dayHeaders.map(d => `<div class="cal-day-header">${d}</div>`).join('');
+// Previous month days
+for(let i = firstDay-1; i >= 0; i--) {
+html += `<div class="cal-day other"><div class="day-num">${daysInPrev-i}</div></div>`;
+}
+// Current month days
+for(let d = 1; d <= daysInMonth; d++) {
+const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+const dayEvents = calendarEvents.filter(e => e.date === dateStr);
+const isToday = today.getFullYear()===calYear && today.getMonth()===calMonth && today.getDate()===d;
+const isSelected = selectedDate === dateStr;
+html += `<div class="cal-day ${isToday?'today':''} ${isSelected?'selected':''}" onclick="selectDate('${dateStr}')">
+<div class="day-num">${d}</div>
+<div>${dayEvents.map(e => `<span class="event-dot" style="background:${e.color}"></span>`).join('')}</div>
+</div>`;
+}
+// Next month days
+const totalCells = firstDay + daysInMonth;
+const remaining = (7 - totalCells % 7) % 7;
+for(let i = 1; i <= remaining; i++) {
+html += `<div class="cal-day other"><div class="day-num">${i}</div></div>`;
+}
+grid.innerHTML = html;
 }
 
-function changeMonth(dir) { calendarDate.setMonth(calendarDate.getMonth()+dir); renderCalendar(); }
-
-function showDayEvents(dateStr) {
-    const evts = calendarEvents.filter(e=>e.date===dateStr);
-    const el = document.getElementById('eventsList');
-    if (evts.length===0) { el.innerHTML='<p style="color:var(--text-muted);text-align:center;padding:20px">No events on this date</p>'; return; }
-    el.innerHTML = evts.map(e=>`<div style="display:flex;align-items:center;gap:14px;padding:14px;background:var(--bg-primary);border-radius:10px;border-left:4px solid ${e.color}"><div style="flex:1"><div style="font-weight:600;font-size:.95rem">${e.title}</div><div style="font-size:.8rem;color:var(--text-muted);margin-top:2px">${e.time} - ${e.date}</div></div></div>`).join('');
+function selectDate(dateStr) {
+selectedDate = dateStr;
+renderCalendar();
+const eventsDiv = document.getElementById('calEvents');
+const dayEvents = calendarEvents.filter(e => e.date === dateStr);
+const d = new Date(dateStr + 'T12:00:00');
+const formatted = d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+if(dayEvents.length === 0) {
+eventsDiv.innerHTML = `<h3>${formatted}</h3><p style="color:var(--text-muted);font-size:14px;margin-top:12px">No events scheduled</p>`;
+} else {
+eventsDiv.innerHTML = `<h3>${formatted}</h3>` + dayEvents.map(e => `
+<div class="cal-event" style="border-left-color:${e.color}">
+<div class="ev-title">${e.title}</div>
+<div class="ev-time">${e.time}</div>
+</div>`).join('');
+}
 }
 
-function renderEvents() {
-    const upcoming = calendarEvents.slice(0,5);
-    document.getElementById('eventsList').innerHTML = upcoming.map(e=>`<div style="display:flex;align-items:center;gap:14px;padding:14px;background:var(--bg-primary);border-radius:10px;border-left:4px solid ${e.color}"><div style="flex:1"><div style="font-weight:600;font-size:.95rem">${e.title}</div><div style="font-size:.8rem;color:var(--text-muted);margin-top:2px">${e.time} - ${e.date}</div></div></div>`).join('');
+function changeMonth(dir) {
+calMonth += dir;
+if(calMonth > 11) { calMonth = 0; calYear++; }
+if(calMonth < 0) { calMonth = 11; calYear--; }
+selectedDate = null;
+renderCalendar();
+document.getElementById('calEvents').innerHTML = '<h3>Events</h3><p style="color:var(--text-muted);font-size:14px;margin-top:12px">Select a date to view events</p>';
 }
 
-// ═══════════════════════════════════════
-// EMAIL
-// ═══════════════════════════════════════
-const emails = {
-    inbox: [
-        { id:1, from:'Sarah Mitchell', avatar:'SM', color:'#A855F7', subject:'Q2 Sales Targets Update', preview:'Hi James, I\'ve updated the Q2 targets based on our discussion...', body:'Hi James,\n\nI\'ve updated the Q2 sales targets based on our discussion last Friday. The revised numbers are:\n\n- Team Target: $450K\n- Individual Target: $90K\n- New Accounts: 15\n\nPlease review and let me know if you have any concerns.\n\nBest regards,\nSarah', time:'10:32 AM', unread:true },
-        { id:2, from:'Mike Johnson', avatar:'MJ', color:'#F59E0B', subject:'Acme Corp - Contract Ready', preview:'The legal team has approved the Acme Corp contract. Ready for...', body:'Hey James,\n\nGreat news! The legal team has approved the Acme Corp contract. It\'s ready for final signatures.\n\nDeal value: $45,000\nContract term: 12 months\n\nCan you schedule a signing call for this week?\n\nThanks,\nMike', time:'9:15 AM', unread:true },
-        { id:3, from:'Lisa Wang', avatar:'LW', color:'#EC4899', subject:'New Lead - TechStart Inc', preview:'Just got off a call with TechStart Inc. They\'re interested in...', body:'Hi James,\n\nJust got off a call with TechStart Inc. They\'re interested in our enterprise plan. Key details:\n\n- Contact: David Chen, CTO\n- Company size: 200+ employees\n- Budget: $30-50K annually\n- Timeline: Q3 implementation\n\nI\'ve added them to the pipeline. Should I schedule a demo?\n\nLisa', time:'Yesterday', unread:true },
-        { id:4, from:'Robert Kim', avatar:'RK', color:'#22C55E', subject:'Weekly Pipeline Report', preview:'Attached is this week\'s pipeline report. Key highlights...', body:'Team,\n\nHere\'s this week\'s pipeline report highlights:\n\n- Total pipeline value: $380K\n- New deals added: 8\n- Deals closed: 3 ($52K)\n- Win rate: 62%\n\nStrongest performer: Sarah (4 deals closed)\nArea for improvement: Follow-up response time\n\nFull report attached.\n\nRobert', time:'Yesterday', unread:false },
-        { id:5, from:'GlobalTech Solutions', avatar:'GT', color:'#3B82F6', subject:'Partnership Opportunity', preview:'We\'d like to explore a strategic partnership with your...', body:'Dear James,\n\nWe\'ve been following your company\'s growth and would like to explore a strategic partnership opportunity.\n\nWe believe there are significant synergies between our platforms that could benefit both our customer bases.\n\nWould you be available for a 30-minute call next week to discuss?\n\nBest,\nAlex Rivera\nGlobalTech Solutions', time:'2 days ago', unread:false },
-        { id:6, from:'HR Department', avatar:'HR', color:'#64748B', subject:'Team Building Event - April 25', preview:'Mark your calendars! The annual team building event is...', body:'Hi Team,\n\nMark your calendars! Our annual team building event is scheduled for April 25th.\n\nVenue: Lakeside Resort\nTime: 10 AM - 6 PM\nActivities: Team challenges, BBQ lunch, awards ceremony\n\nPlease RSVP by April 18th.\n\nHR Team', time:'3 days ago', unread:false },
-        { id:7, from:'Beta Inc', avatar:'BI', color:'#F97316', subject:'Re: Product Demo Follow-up', preview:'Thank you for the excellent demo yesterday. Our team was...', body:'Hi James,\n\nThank you for the excellent demo yesterday. Our team was very impressed with the platform capabilities.\n\nWe have a few follow-up questions:\n1. Custom integration options?\n2. Data migration support?\n3. Enterprise SLA terms?\n\nLooking forward to your response.\n\nBest,\nJennifer Lee\nBeta Inc', time:'3 days ago', unread:false },
-        { id:8, from:'System', avatar:'SY', color:'#64748B', subject:'Monthly Report Generated', preview:'Your monthly CRM performance report for March 2026 is ready...', body:'Your monthly CRM performance report for March 2026 has been generated.\n\nKey metrics:\n- Revenue: $42,800 (highest this year)\n- New contacts: 34\n- Emails sent: 156\n- Meetings held: 28\n\nView the full report in your dashboard.', time:'4 days ago', unread:false },
-    ],
-    sent: [
-        { id:101, from:'You', avatar:'JD', color:'#3B82F6', subject:'Re: Partnership Opportunity', preview:'Hi Alex, thank you for reaching out. I\'d be happy to...', body:'Hi Alex,\n\nThank you for reaching out. I\'d be happy to discuss a potential partnership.\n\nI\'m available next Tuesday or Wednesday afternoon. Please send me a calendar invite.\n\nBest regards,\nJames', time:'2 days ago', unread:false },
-        { id:102, from:'You', avatar:'JD', color:'#3B82F6', subject:'Pricing Proposal - NexGen', preview:'Hi David, please find attached our enterprise pricing...', body:'Hi David,\n\nPlease find attached our enterprise pricing proposal for NexGen.\n\nHighlights:\n- Annual subscription: $38,000\n- Implementation support included\n- 24/7 priority support\n- Custom integrations\n\nLet me know if you\'d like to schedule a call to discuss.\n\nBest,\nJames', time:'3 days ago', unread:false },
-    ],
-    draft: [
-        { id:201, from:'Draft', avatar:'JD', color:'#64748B', subject:'Q2 Strategy Document', preview:'Outline for Q2 sales strategy including target markets...', body:'Q2 Sales Strategy Draft\n\n1. Target Markets\n- Healthcare\n- FinTech\n- E-commerce\n\n2. Goals\n- $500K pipeline\n- 20 new accounts\n- 65% win rate\n\n[DRAFT - IN PROGRESS]', time:'Draft', unread:false },
-    ]
-};
-let emailFolder = 'inbox';
+// ─── EMAIL ───
+let currentFolder = 'inbox';
+let currentEmailId = null;
 
-function renderEmails() {
-    const list = document.getElementById('emailList');
-    const folder = emails[emailFolder];
-    list.innerHTML = folder.map(e=>`
-        <div onclick="showEmail(${e.id})" style="display:flex;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .2s;${e.unread?'background:rgba(59,130,246,0.05)':''}" onmouseenter="this.style.background='var(--bg-primary)'" onmouseleave="this.style.background='${e.unread?'rgba(59,130,246,0.05)':''}'">
-            <div class="avatar" style="width:40px;height:40px;font-size:.75rem;background:${e.color};flex-shrink:0">${e.avatar}</div>
-            <div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-weight:${e.unread?'700':'500'};font-size:.9rem">${e.from}</span><span style="font-size:.75rem;color:var(--text-muted)">${e.time}</span></div>
-            <div style="font-size:.85rem;font-weight:${e.unread?'600':'400'};margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.subject}</div>
-            <div style="font-size:.8rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.preview}</div></div>
-            ${e.unread?'<div style="width:8px;height:8px;border-radius:50%;background:#3B82F6;margin-top:6px;flex-shrink:0"></div>':''}
-        </div>`).join('') || '<p style="padding:40px;text-align:center;color:var(--text-muted)">No emails</p>';
+function renderEmails(folder) {
+currentFolder = folder;
+currentEmailId = null;
+document.querySelectorAll('#emailTabs .tab').forEach(t => t.classList.toggle('active', t.dataset.folder===folder));
+const list = document.getElementById('emailList');
+const items = emails[folder] || [];
+list.innerHTML = items.map(e => `
+<div class="email-item ${e.unread?'unread':''}" onclick="readEmail('${folder}',${e.id})">
+${e.unread?'<div class="unread-dot"></div>':''}
+<div class="avatar email-avatar ${e.av}" style="width:36px;height:36px;font-size:13px">${e.from.split(' ').map(w=>w[0]).join('').substring(0,2)}</div>
+<div class="email-info">
+<div class="email-sender">${e.from}</div>
+<div class="email-subject">${e.subject}</div>
+<div class="email-preview">${e.preview}</div>
+</div>
+<div class="email-time">${e.time}</div>
+</div>
+`).join('');
+document.getElementById('emailReading').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);font-size:14px">Select an email to read</div>';
 }
 
-function showEmail(id) {
-    const all = [...emails.inbox,...emails.sent,...emails.draft];
-    const e = all.find(x=>x.id===id);
-    if (!e) return;
-    e.unread = false;
-    document.getElementById('emailDetail').innerHTML = `
-        <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)">
-            <div class="avatar" style="width:48px;height:48px;font-size:.85rem;background:${e.color}">${e.avatar}</div>
-            <div style="flex:1"><div style="font-weight:700;font-size:1.05rem">${e.from}</div><div style="font-size:.8rem;color:var(--text-muted)">${e.time}</div></div>
-            <button onclick="alert('Reply sent!')" style="padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600">Reply</button>
-        </div>
-        <h2 style="font-size:1.2rem;margin-bottom:16px">${e.subject}</h2>
-        <div style="color:var(--text-secondary);line-height:1.8;white-space:pre-line;font-size:.95rem">${e.body}</div>`;
-    renderEmails();
-}
+function switchEmailTab(folder) { renderEmails(folder); }
 
-function filterEmails(folder, btn) {
-    emailFolder = folder;
-    document.querySelectorAll('#view-email .filter-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    renderEmails();
-    document.getElementById('emailDetail').innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:60px 0">Select an email to read</p>';
-}
-
-// ═══════════════════════════════════════
-// ENHANCED SWITCH VIEW
-// ═══════════════════════════════════════
-const origSwitchView = switchView;
-switchView = function(view) {
-    origSwitchView(view);
-    if (view === 'tasks') renderTasks();
-    if (view === 'reports') setTimeout(initReportCharts, 100);
-    if (view === 'calendar') renderCalendar();
-    if (view === 'email') renderEmails();
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-    initCharts();
-    renderContacts();
+function readEmail(folder, id) {
+const e = emails[folder].find(x => x.id === id);
+if(!e) return;
+currentEmailId = id;
+e.unread = false;
+// update list
+renderEmails(folder);
+// highlight active
+document.querySelectorAll('.email-item').forEach((item,i) => {
+if(emails[folder][i]?.id === id) item.classList.add('active');
 });
+// show reading pane
+const pane = document.getElementById('emailReading');
+pane.innerHTML = `
+<div class="er-header">
+<div class="er-subject">${e.subject}</div>
+<div class="er-meta">
+<div class="avatar ${e.av}" style="width:32px;height:32px;font-size:12px">${e.from.split(' ').map(w=>w[0]).join('').substring(0,2)}</div>
+<div><strong>${e.from}</strong> ${e.email ? '&lt;'+e.email+'&gt;' : ''}<br><span style="font-size:12px;color:var(--text-muted)">${e.time}</span></div>
+</div>
+</div>
+<div class="er-body">${e.body}</div>
+<div style="margin-top:24px">
+<button class="btn btn-ghost" onclick="openModal('composeModal')">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="16" height="16"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
+Reply
+</button>
+</div>`;
+pane.classList.add('mobile-show');
+// Update badge count
+updateEmailBadge();
+}
+
+function updateEmailBadge() {
+const unreadCount = emails.inbox.filter(e => e.unread).length;
+const badge = document.querySelector('.nav-item[data-view="email"] .nav-badge');
+if(badge) badge.textContent = unreadCount;
+}
+
+// ─── CHARTS ───
+let revenueChartInstance = null;
+let stageChartInstance = null;
+let monthlyRevChartInstance = null;
+let wonLostChartInstance = null;
+
+function renderDashboardCharts() {
+// Revenue Trend
+if(revenueChartInstance) revenueChartInstance.destroy();
+const ctx1 = document.getElementById('revenueChart').getContext('2d');
+const gradient = ctx1.createLinearGradient(0, 0, 0, 300);
+gradient.addColorStop(0, 'rgba(37,99,235,0.3)');
+gradient.addColorStop(1, 'rgba(37,99,235,0)');
+revenueChartInstance = new Chart(ctx1, {
+type:'line',
+data:{
+labels:['Nov','Dec','Jan','Feb','Mar','Apr'],
+datasets:[{label:'Revenue',data:[68000,82000,75000,95000,88000,124500],
+borderColor:'#2563EB',backgroundColor:gradient,fill:true,tension:.4,borderWidth:2.5,pointBackgroundColor:'#2563EB',pointRadius:4,pointHoverRadius:6}]
+},
+options:{responsive:true,plugins:{legend:{display:false}},scales:{
+x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748B',font:{size:12}}},
+y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748B',font:{size:12},callback:v=>'$'+v/1000+'k'}}
+}}
+});
+
+// Deals by Stage
+if(stageChartInstance) stageChartInstance.destroy();
+const ctx2 = document.getElementById('dealsStageChart').getContext('2d');
+stageChartInstance = new Chart(ctx2, {
+type:'doughnut',
+data:{
+labels:['Lead','Qualified','Proposal','Negotiation','Won','Lost'],
+datasets:[{data:[8,12,9,6,12,3],
+backgroundColor:['#3B82F6','#A855F7','#F59E0B','#EC4899','#22C55E','#EF4444'],
+borderWidth:0,hoverOffset:8}]
+},
+options:{responsive:true,cutout:'68%',plugins:{legend:{position:'bottom',labels:{color:'#94A3B8',padding:16,usePointStyle:true,pointStyleWidth:8,font:{size:12}}}}}
+});
+}
+
+function renderReportsCharts() {
+// Monthly Revenue
+if(monthlyRevChartInstance) monthlyRevChartInstance.destroy();
+const ctx3 = document.getElementById('monthlyRevenueChart').getContext('2d');
+monthlyRevChartInstance = new Chart(ctx3, {
+type:'bar',
+data:{
+labels:['Jan','Feb','Mar','Apr','May','Jun'],
+datasets:[{label:'Revenue',data:[38000,42000,52400,48700,44200,46800],
+backgroundColor:'rgba(37,99,235,0.7)',borderRadius:6,borderSkipped:false,barPercentage:.6}]
+},
+options:{responsive:true,plugins:{legend:{display:false}},scales:{
+x:{grid:{display:false},ticks:{color:'#64748B',font:{size:12}}},
+y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748B',font:{size:12},callback:v=>'$'+v/1000+'k'}}
+}}
+});
+
+// Won vs Lost
+if(wonLostChartInstance) wonLostChartInstance.destroy();
+const ctx4 = document.getElementById('wonLostChart').getContext('2d');
+wonLostChartInstance = new Chart(ctx4, {
+type:'doughnut',
+data:{
+labels:['Won','Lost'],
+datasets:[{data:[32,12],backgroundColor:['#22C55E','#EF4444'],borderWidth:0,hoverOffset:8}]
+},
+options:{responsive:true,cutout:'68%',plugins:{legend:{position:'bottom',labels:{color:'#94A3B8',padding:16,usePointStyle:true,pointStyleWidth:8,font:{size:12}}}}}
+});
+}
+
+// ─── INIT ───
+renderContacts(contacts);
+renderDeals();
+renderTasks();
+renderDashboardCharts();
 </script>
 </body>
 </html>
