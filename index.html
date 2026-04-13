@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SalesCRM - Professional CRM Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0F172A;
+            --bg-secondary: #1E293B;
+            --bg-tertiary: #334155;
+            --accent: #3B82F6;
+            --accent-hover: #2563EB;
+            --accent-light: rgba(59,130,246,0.15);
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            --border: #334155;
+            --success: #22C55E;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --purple: #A855F7;
+            --sidebar-width: 260px;
+            --topbar-height: 64px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ───────── SIDEBAR ───────── */
+        .sidebar {
+            position: fixed;
+            left: 0; top: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: transform .3s ease;
+        }
+
+        .sidebar-logo {
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-logo .logo-icon {
+            width: 36px; height: 36px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .sidebar-logo span {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 12px;
+            overflow-y: auto;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-muted);
+            padding: 8px 12px 8px;
+            margin-top: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all .15s ease;
+            margin-bottom: 2px;
+            user-select: none;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+
+        .nav-item svg {
+            width: 20px; height: 20px;
+            flex-shrink: 0;
+        }
+
+        .nav-item .badge {
+            margin-left: auto;
+            background: var(--accent);
+            color: #fff;
+            font-size: 11px;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .sidebar-user {
+            padding: 16px 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-user-avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .sidebar-user-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .sidebar-user-info .name {
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-user-info .role {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ───────── TOP BAR ───────── */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            height: var(--topbar-height);
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 28px;
+            gap: 16px;
+            z-index: 90;
+        }
+
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .topbar-search {
+            flex: 1;
+            max-width: 420px;
+            position: relative;
+        }
+
+        .topbar-search svg {
+            position: absolute;
+            left: 14px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            width: 18px; height: 18px;
+        }
+
+        .topbar-search input {
+            width: 100%;
+            padding: 9px 14px 9px 42px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: border-color .15s;
+        }
+
+        .topbar-search input::placeholder { color: var(--text-muted); }
+        .topbar-search input:focus { border-color: var(--accent); }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .topbar-btn {
+            position: relative;
+            width: 40px; height: 40px;
+            border-radius: 8px;
+            border: none;
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .15s;
+        }
+
+        .topbar-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .topbar-btn svg { width: 20px; height: 20px; }
+
+        .notif-badge {
+            position: absolute;
+            top: 6px; right: 6px;
+            width: 18px; height: 18px;
+            background: var(--danger);
+            border-radius: 50%;
+            font-size: 10px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--bg-secondary);
+        }
+
+        .topbar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: background .15s;
+        }
+
+        .topbar-user:hover { background: var(--bg-tertiary); }
+
+        .topbar-user-avatar {
+            width: 34px; height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .topbar-user-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* ───────── MAIN CONTENT ───────── */
+        .main {
+            margin-left: var(--sidebar-width);
+            margin-top: var(--topbar-height);
+            padding: 28px;
+            min-height: calc(100vh - var(--topbar-height));
+        }
+
+        .view { display: none; }
+        .view.active { display: block; }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .15s;
+            font-family: inherit;
+        }
+
+        .btn svg { width: 18px; height: 18px; }
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); }
+        .btn-secondary:hover { background: #475569; }
+        .btn-sm { padding: 6px 14px; font-size: 13px; }
+        .btn-sm svg { width: 16px; height: 16px; }
+        .btn-danger { background: var(--danger); color: #fff; }
+
+        /* ───────── KPI CARDS ───────── */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .kpi-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px;
+        }
+
+        .kpi-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .kpi-card-header .label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .kpi-icon {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .kpi-icon svg { width: 20px; height: 20px; }
+
+        .kpi-icon.blue { background: var(--accent-light); color: var(--accent); }
+        .kpi-icon.green { background: rgba(34,197,94,.15); color: var(--success); }
+        .kpi-icon.purple { background: rgba(168,85,247,.15); color: var(--purple); }
+        .kpi-icon.orange { background: rgba(245,158,11,.15); color: var(--warning); }
+
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .kpi-change {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .kpi-change.up { color: var(--success); }
+        .kpi-change.down { color: var(--danger); }
+        .kpi-change span { color: var(--text-muted); font-weight: 400; }
+
+        /* ───────── CHARTS ───────── */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .chart-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .chart-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .chart-card-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .chart-tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 3px;
+        }
+
+        .chart-tab {
+            padding: 5px 14px;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all .15s;
+        }
+
+        .chart-tab.active {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 280px;
+        }
+
+        /* ───────── RECENT ACTIVITY ───────── */
+        .activity-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .activity-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+
+        .activity-item:last-child { border-bottom: none; }
+
+        .activity-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            margin-top: 5px;
+            flex-shrink: 0;
+        }
+
+        .activity-dot.blue { background: var(--accent); }
+        .activity-dot.green { background: var(--success); }
+        .activity-dot.orange { background: var(--warning); }
+        .activity-dot.purple { background: var(--purple); }
+        .activity-dot.red { background: var(--danger); }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-content p {
+            font-size: 14px;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .activity-content p strong {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .activity-content .time {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* ───────── TABLE ───────── */
+        .table-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .table-search {
+            position: relative;
+            flex: 1;
+            min-width: 200px;
+            max-width: 320px;
+        }
+
+        .table-search svg {
+            position: absolute;
+            left: 12px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            width: 16px; height: 16px;
+        }
+
+        .table-search input {
+            width: 100%;
+            padding: 9px 12px 9px 36px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .table-search input:focus { border-color: var(--accent); }
+
+        .filter-select {
+            padding: 9px 14px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .data-table {
+            width: 100%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 14px 18px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .8px;
+            color: var(--text-muted);
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 14px 18px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .data-table tr:last-child td { border-bottom: none; }
+
+        .data-table tr:hover td {
+            background: rgba(59,130,246,.04);
+        }
+
+        .contact-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .contact-avatar {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.active { background: rgba(34,197,94,.15); color: var(--success); }
+        .status-badge.inactive { background: rgba(100,116,139,.2); color: var(--text-muted); }
+        .status-badge.lead { background: var(--accent-light); color: var(--accent); }
+        .status-badge.prospect { background: rgba(168,85,247,.15); color: var(--purple); }
+
+        .action-btns {
+            display: flex;
+            gap: 6px;
+        }
+
+        .action-btn {
+            width: 32px; height: 32px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .15s;
+        }
+
+        .action-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .action-btn svg { width: 14px; height: 14px; }
+
+        /* ───────── PIPELINE / KANBAN ───────── */
+        .pipeline-board {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            padding-bottom: 12px;
+            min-height: calc(100vh - 200px);
+        }
+
+        .pipeline-column {
+            min-width: 280px;
+            max-width: 300px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pipeline-column-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px 10px 0 0;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .pipeline-column:nth-child(2) .pipeline-column-header { border-bottom-color: var(--purple); }
+        .pipeline-column:nth-child(3) .pipeline-column-header { border-bottom-color: var(--warning); }
+        .pipeline-column:nth-child(4) .pipeline-column-header { border-bottom-color: #F97316; }
+        .pipeline-column:nth-child(5) .pipeline-column-header { border-bottom-color: var(--success); }
+
+        .pipeline-column-header h4 {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .pipeline-column-header .count {
+            font-size: 12px;
+            background: var(--bg-primary);
+            padding: 2px 9px;
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .pipeline-cards {
+            flex: 1;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 200px;
+        }
+
+        .pipeline-cards.drag-over {
+            background: rgba(59,130,246,.05);
+            border-color: var(--accent);
+        }
+
+        .deal-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            cursor: grab;
+            transition: all .15s;
+        }
+
+        .deal-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,.3);
+        }
+
+        .deal-card.dragging {
+            opacity: 0.5;
+            transform: rotate(2deg);
+        }
+
+        .deal-card-company {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .deal-card-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .deal-card-contact {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .deal-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .deal-probability {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .deal-probability.high { background: rgba(34,197,94,.15); color: var(--success); }
+        .deal-probability.medium { background: rgba(245,158,11,.15); color: var(--warning); }
+        .deal-probability.low { background: rgba(239,68,68,.15); color: var(--danger); }
+
+        .deal-card-date {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* ───────── MODALS ───────── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.6);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 22px 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            width: 34px; height: 34px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .15s;
+        }
+
+        .modal-close:hover {
+            background: var(--danger);
+            color: #fff;
+            border-color: var(--danger);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color .15s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--accent);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .modal-footer {
+            padding: 16px 24px 22px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* ───────── RESPONSIVE ───────── */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.5);
+            z-index: 99;
+        }
+
+        @media (max-width: 1200px) {
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .charts-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .sidebar-overlay.open {
+                display: block;
+            }
+            .topbar {
+                left: 0;
+            }
+            .main {
+                margin-left: 0;
+                padding: 20px 16px;
+            }
+            .mobile-toggle {
+                display: flex;
+            }
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+            .topbar-user-name { display: none; }
+            .page-header { flex-direction: column; align-items: flex-start; }
+            .data-table { overflow-x: auto; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+
+        /* ───────── SCROLLBAR ───────── */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        /* ───────── ANIMATIONS ───────── */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .view.active { animation: fadeIn .3s ease; }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-icon">S</div>
+        <span>SalesCRM</span>
+    </div>
+
+    <nav class="sidebar-nav">
+        <div class="nav-section-title">Main</div>
+        <div class="nav-item active" data-view="dashboard" onclick="switchView('dashboard')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Dashboard
+        </div>
+        <div class="nav-item" data-view="contacts" onclick="switchView('contacts')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Contacts
+            <div class="badge">48</div>
+        </div>
+        <div class="nav-item" data-view="deals" onclick="switchView('deals')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Deals
+        </div>
+        <div class="nav-item" data-view="pipeline" onclick="switchView('pipeline')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-4"/><line x1="8" y1="21" x2="8" y2="16"/><line x1="16" y1="21" x2="16" y2="16"/></svg>
+            Pipeline
+        </div>
+
+        <div class="nav-section-title">Manage</div>
+        <div class="nav-item" onclick="switchView('dashboard')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            Tasks
+            <div class="badge">5</div>
+        </div>
+        <div class="nav-item" onclick="switchView('dashboard')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Reports
+        </div>
+        <div class="nav-item" onclick="switchView('dashboard')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Settings
+        </div>
+    </nav>
+
+    <div class="sidebar-user">
+        <div class="sidebar-user-avatar">JD</div>
+        <div class="sidebar-user-info">
+            <div class="name">James Donovan</div>
+            <div class="role">Sales Manager</div>
+        </div>
+    </div>
+</aside>
+
+<!-- TOP BAR -->
+<header class="topbar">
+    <button class="mobile-toggle" onclick="toggleSidebar()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+
+    <div class="topbar-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search contacts, deals, tasks..." id="globalSearch" oninput="handleGlobalSearch(this.value)">
+    </div>
+
+    <div class="topbar-actions">
+        <button class="topbar-btn" title="Notifications">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="notif-badge">3</span>
+        </button>
+        <button class="topbar-btn" title="Messages">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </button>
+    </div>
+
+    <div class="topbar-user" onclick="document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('open');">
+        <div class="topbar-user-avatar">JD</div>
+        <span class="topbar-user-name">James Donovan</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+    <!-- ───── DASHBOARD VIEW ───── -->
+    <section class="view active" id="view-dashboard">
+        <div class="page-header">
+            <div>
+                <h1>Dashboard</h1>
+                <p>Welcome back, James. Here is your sales overview.</p>
+            </div>
+            <div style="display:flex;gap:10px">
+                <button class="btn btn-secondary btn-sm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    Last 6 Months
+                </button>
+                <button class="btn btn-primary btn-sm" onclick="openModal('deal')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    New Deal
+                </button>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-card-header">
+                    <span class="label">Total Revenue</span>
+                    <div class="kpi-icon blue">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                </div>
+                <div class="kpi-value">$124,500</div>
+                <div class="kpi-change up">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+                    +12.5% <span>vs last month</span>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-card-header">
+                    <span class="label">New Leads</span>
+                    <div class="kpi-icon green">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                    </div>
+                </div>
+                <div class="kpi-value">48</div>
+                <div class="kpi-change up">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+                    +8.2% <span>vs last month</span>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-card-header">
+                    <span class="label">Deals Won</span>
+                    <div class="kpi-icon purple">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
+                </div>
+                <div class="kpi-value">12</div>
+                <div class="kpi-change up">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+                    +3.1% <span>vs last month</span>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-card-header">
+                    <span class="label">Conversion Rate</span>
+                    <div class="kpi-icon orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    </div>
+                </div>
+                <div class="kpi-value">24%</div>
+                <div class="kpi-change down">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg>
+                    -1.8% <span>vs last month</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <h3>Revenue Overview</h3>
+                    <div class="chart-tabs">
+                        <button class="chart-tab active">6M</button>
+                        <button class="chart-tab">1Y</button>
+                        <button class="chart-tab">All</button>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <h3>Deals by Stage</h3>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="dealsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="activity-card">
+            <h3>Recent Activity</h3>
+            <div class="activity-list">
+                <div class="activity-item">
+                    <div class="activity-dot green"></div>
+                    <div class="activity-content">
+                        <p><strong>Sarah Chen</strong> closed a deal with <strong>TechVista Solutions</strong> for $32,000</p>
+                        <div class="time">2 hours ago</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot blue"></div>
+                    <div class="activity-content">
+                        <p>New lead <strong>Marcus Rivera</strong> from <strong>Quantum Dynamics</strong> added to pipeline</p>
+                        <div class="time">3 hours ago</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot orange"></div>
+                    <div class="activity-content">
+                        <p>Proposal sent to <strong>Horizon Media Group</strong> - awaiting response</p>
+                        <div class="time">5 hours ago</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot purple"></div>
+                    <div class="activity-content">
+                        <p>Meeting scheduled with <strong>Elena Kowalski</strong> at <strong>NexGen Robotics</strong></p>
+                        <div class="time">Yesterday at 4:30 PM</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot red"></div>
+                    <div class="activity-content">
+                        <p>Deal with <strong>Apex Manufacturing</strong> moved to <strong>Closed Lost</strong></p>
+                        <div class="time">Yesterday at 11:15 AM</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot green"></div>
+                    <div class="activity-content">
+                        <p><strong>David Park</strong> qualified lead <strong>Stellar Innovations</strong> - moved to Proposal</p>
+                        <div class="time">2 days ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ───── CONTACTS VIEW ───── -->
+    <section class="view" id="view-contacts">
+        <div class="page-header">
+            <div>
+                <h1>Contacts</h1>
+                <p>Manage your contacts and leads</p>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('contact')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add Contact
+            </button>
+        </div>
+
+        <div class="table-toolbar">
+            <div class="table-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" placeholder="Search contacts..." id="contactSearch" oninput="filterContacts()">
+            </div>
+            <select class="filter-select" id="statusFilter" onchange="filterContacts()">
+                <option value="all">All Statuses</option>
+                <option value="active">Active</option>
+                <option value="lead">Lead</option>
+                <option value="prospect">Prospect</option>
+                <option value="inactive">Inactive</option>
+            </select>
+        </div>
+
+        <div class="data-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Company</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th>Last Contact</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="contactsBody"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ───── DEALS VIEW ───── -->
+    <section class="view" id="view-deals">
+        <div class="page-header">
+            <div>
+                <h1>Deals</h1>
+                <p>Track and manage your sales deals</p>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('deal')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add Deal
+            </button>
+        </div>
+
+        <div class="data-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Deal</th>
+                        <th>Company</th>
+                        <th>Value</th>
+                        <th>Stage</th>
+                        <th>Probability</th>
+                        <th>Contact</th>
+                        <th>Close Date</th>
+                    </tr>
+                </thead>
+                <tbody id="dealsBody"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ───── PIPELINE VIEW ───── -->
+    <section class="view" id="view-pipeline">
+        <div class="page-header">
+            <div>
+                <h1>Pipeline</h1>
+                <p>Drag and drop deals between stages</p>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('deal')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add Deal
+            </button>
+        </div>
+
+        <div class="pipeline-board" id="pipelineBoard"></div>
+    </section>
+
+</main>
+
+<!-- ───── ADD CONTACT MODAL ───── -->
+<div class="modal-overlay" id="contactModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Add New Contact</h2>
+            <button class="modal-close" onclick="closeModal('contact')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <form onsubmit="addContact(event)">
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" id="cFirstName" required placeholder="John">
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" id="cLastName" required placeholder="Doe">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Company</label>
+                    <input type="text" id="cCompany" required placeholder="Acme Corp">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="cEmail" required placeholder="john@acme.com">
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" id="cPhone" placeholder="(555) 123-4567">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="cStatus">
+                        <option value="lead">Lead</option>
+                        <option value="prospect">Prospect</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('contact')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Add Contact</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ───── ADD DEAL MODAL ───── -->
+<div class="modal-overlay" id="dealModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Add New Deal</h2>
+            <button class="modal-close" onclick="closeModal('deal')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <form onsubmit="addDeal(event)">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Deal Name</label>
+                    <input type="text" id="dName" required placeholder="Enterprise License">
+                </div>
+                <div class="form-group">
+                    <label>Company</label>
+                    <input type="text" id="dCompany" required placeholder="Acme Corp">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Value ($)</label>
+                        <input type="number" id="dValue" required placeholder="25000">
+                    </div>
+                    <div class="form-group">
+                        <label>Probability (%)</label>
+                        <input type="number" id="dProbability" min="0" max="100" required placeholder="50">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Stage</label>
+                    <select id="dStage">
+                        <option value="Lead">Lead</option>
+                        <option value="Qualified">Qualified</option>
+                        <option value="Proposal">Proposal</option>
+                        <option value="Negotiation">Negotiation</option>
+                        <option value="Won">Won</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Contact Person</label>
+                    <input type="text" id="dContact" placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Expected Close Date</label>
+                    <input type="date" id="dCloseDate">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('deal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Add Deal</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════
+
+const avatarColors = [
+    'linear-gradient(135deg,#3B82F6,#8B5CF6)',
+    'linear-gradient(135deg,#22C55E,#06B6D4)',
+    'linear-gradient(135deg,#F59E0B,#EF4444)',
+    'linear-gradient(135deg,#EC4899,#A855F7)',
+    'linear-gradient(135deg,#06B6D4,#3B82F6)',
+    'linear-gradient(135deg,#8B5CF6,#EC4899)',
+    'linear-gradient(135deg,#F97316,#F59E0B)',
+    'linear-gradient(135deg,#14B8A6,#22C55E)',
+];
+
+let contacts = [
+    { name:'Sarah Chen', company:'TechVista Solutions', email:'sarah.chen@techvista.com', phone:'(555) 234-5678', status:'active', lastContact:'2 hours ago' },
+    { name:'Marcus Rivera', company:'Quantum Dynamics', email:'m.rivera@quantumd.io', phone:'(555) 345-6789', status:'lead', lastContact:'3 hours ago' },
+    { name:'Elena Kowalski', company:'NexGen Robotics', email:'elena.k@nexgenbot.com', phone:'(555) 456-7890', status:'active', lastContact:'Yesterday' },
+    { name:'James Thompson', company:'Horizon Media Group', email:'j.thompson@horizonmg.com', phone:'(555) 567-8901', status:'prospect', lastContact:'Yesterday' },
+    { name:'Aisha Patel', company:'CloudNine SaaS', email:'aisha@cloudnine.io', phone:'(555) 678-9012', status:'active', lastContact:'2 days ago' },
+    { name:'Robert Kim', company:'Apex Manufacturing', email:'r.kim@apexmfg.com', phone:'(555) 789-0123', status:'inactive', lastContact:'1 week ago' },
+    { name:'Lisa Johansson', company:'Nordic Analytics', email:'l.johansson@nordicanalytics.se', phone:'(555) 890-1234', status:'prospect', lastContact:'3 days ago' },
+    { name:'David Park', company:'Stellar Innovations', email:'d.park@stellarinnov.com', phone:'(555) 901-2345', status:'active', lastContact:'4 days ago' },
+    { name:'Maria Santos', company:'Verde Sustainability', email:'maria@verde-sustain.com', phone:'(555) 012-3456', status:'lead', lastContact:'5 days ago' },
+    { name:'Tom Bradley', company:'FinEdge Capital', email:'t.bradley@finedge.com', phone:'(555) 123-4567', status:'active', lastContact:'1 week ago' },
+    { name:'Nina Volkov', company:'Crimson Creative', email:'nina.v@crimsoncreative.co', phone:'(555) 234-5679', status:'lead', lastContact:'2 days ago' },
+    { name:'Chris Nakamura', company:'PacificTrade Co.', email:'c.nakamura@pacifictrade.com', phone:'(555) 345-6780', status:'prospect', lastContact:'6 days ago' },
+];
+
+let deals = [
+    { name:'Enterprise License', company:'TechVista Solutions', value:32000, stage:'Won', probability:100, contact:'Sarah Chen', closeDate:'2026-03-28' },
+    { name:'Platform Migration', company:'Quantum Dynamics', value:45000, stage:'Lead', probability:20, contact:'Marcus Rivera', closeDate:'2026-06-15' },
+    { name:'Annual Subscription', company:'NexGen Robotics', value:18500, stage:'Negotiation', probability:75, contact:'Elena Kowalski', closeDate:'2026-04-30' },
+    { name:'Marketing Suite', company:'Horizon Media Group', value:27000, stage:'Proposal', probability:50, contact:'James Thompson', closeDate:'2026-05-20' },
+    { name:'Cloud Integration', company:'CloudNine SaaS', value:15000, stage:'Qualified', probability:40, contact:'Aisha Patel', closeDate:'2026-05-10' },
+    { name:'Supply Chain Module', company:'Apex Manufacturing', value:52000, stage:'Lead', probability:15, contact:'Robert Kim', closeDate:'2026-07-01' },
+    { name:'Data Dashboard', company:'Nordic Analytics', value:21000, stage:'Proposal', probability:55, contact:'Lisa Johansson', closeDate:'2026-05-25' },
+    { name:'AI Integration', company:'Stellar Innovations', value:38000, stage:'Qualified', probability:35, contact:'David Park', closeDate:'2026-06-20' },
+    { name:'Sustainability Platform', company:'Verde Sustainability', value:12500, stage:'Lead', probability:10, contact:'Maria Santos', closeDate:'2026-07-15' },
+    { name:'Trading Platform', company:'FinEdge Capital', value:67000, stage:'Negotiation', probability:80, contact:'Tom Bradley', closeDate:'2026-04-20' },
+    { name:'Brand Portal', company:'Crimson Creative', value:9500, stage:'Lead', probability:15, contact:'Nina Volkov', closeDate:'2026-08-01' },
+    { name:'Logistics System', company:'PacificTrade Co.', value:34000, stage:'Proposal', probability:45, contact:'Chris Nakamura', closeDate:'2026-06-01' },
+];
+
+// ═══════════════════════════════════════
+// VIEW SWITCHING
+// ═══════════════════════════════════════
+
+function switchView(view) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.nav-item[data-view]').forEach(n => n.classList.remove('active'));
+
+    document.getElementById('view-' + view).classList.add('active');
+    const navItem = document.querySelector(`.nav-item[data-view="${view}"]`);
+    if (navItem) navItem.classList.add('active');
+
+    // Close mobile sidebar
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+
+    if (view === 'contacts') renderContacts();
+    if (view === 'deals') renderDealsTable();
+    if (view === 'pipeline') renderPipeline();
+}
+
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+
+// ═══════════════════════════════════════
+// CONTACTS
+// ═══════════════════════════════════════
+
+function renderContacts(filtered) {
+    const data = filtered || contacts;
+    const tbody = document.getElementById('contactsBody');
+    tbody.innerHTML = data.map((c, i) => {
+        const initials = c.name.split(' ').map(n => n[0]).join('');
+        const bg = avatarColors[i % avatarColors.length];
+        return `<tr>
+            <td><div class="contact-name"><div class="contact-avatar" style="background:${bg}">${initials}</div>${c.name}</div></td>
+            <td>${c.company}</td>
+            <td style="color:var(--text-secondary)">${c.email}</td>
+            <td style="color:var(--text-secondary)">${c.phone}</td>
+            <td><span class="status-badge ${c.status}">${c.status.charAt(0).toUpperCase() + c.status.slice(1)}</span></td>
+            <td style="color:var(--text-muted)">${c.lastContact}</td>
+            <td>
+                <div class="action-btns">
+                    <button class="action-btn" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="action-btn" title="Delete" onclick="deleteContact(${contacts.indexOf(c)})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+function filterContacts() {
+    const search = document.getElementById('contactSearch').value.toLowerCase();
+    const status = document.getElementById('statusFilter').value;
+    let filtered = contacts.filter(c => {
+        const matchSearch = !search || c.name.toLowerCase().includes(search) || c.company.toLowerCase().includes(search) || c.email.toLowerCase().includes(search);
+        const matchStatus = status === 'all' || c.status === status;
+        return matchSearch && matchStatus;
+    });
+    renderContacts(filtered);
+}
+
+function deleteContact(index) {
+    contacts.splice(index, 1);
+    filterContacts();
+}
+
+function addContact(e) {
+    e.preventDefault();
+    const contact = {
+        name: document.getElementById('cFirstName').value + ' ' + document.getElementById('cLastName').value,
+        company: document.getElementById('cCompany').value,
+        email: document.getElementById('cEmail').value,
+        phone: document.getElementById('cPhone').value || '(555) 000-0000',
+        status: document.getElementById('cStatus').value,
+        lastContact: 'Just now'
+    };
+    contacts.unshift(contact);
+    closeModal('contact');
+    e.target.reset();
+    if (document.getElementById('view-contacts').classList.contains('active')) {
+        filterContacts();
+    }
+}
+
+// ═══════════════════════════════════════
+// DEALS TABLE
+// ═══════════════════════════════════════
+
+function renderDealsTable() {
+    const tbody = document.getElementById('dealsBody');
+    tbody.innerHTML = deals.map(d => {
+        const probClass = d.probability >= 60 ? 'high' : d.probability >= 30 ? 'medium' : 'low';
+        const stageColors = { Lead:'var(--accent)', Qualified:'var(--purple)', Proposal:'var(--warning)', Negotiation:'#F97316', Won:'var(--success)' };
+        return `<tr>
+            <td style="font-weight:600">${d.name}</td>
+            <td>${d.company}</td>
+            <td style="font-weight:600;color:var(--accent)">$${d.value.toLocaleString()}</td>
+            <td><span style="color:${stageColors[d.stage] || 'var(--text-secondary)'};font-weight:600">${d.stage}</span></td>
+            <td><span class="deal-probability ${probClass}">${d.probability}%</span></td>
+            <td style="color:var(--text-secondary)">${d.contact}</td>
+            <td style="color:var(--text-muted)">${d.closeDate}</td>
+        </tr>`;
+    }).join('');
+}
+
+function addDeal(e) {
+    e.preventDefault();
+    const deal = {
+        name: document.getElementById('dName').value,
+        company: document.getElementById('dCompany').value,
+        value: parseInt(document.getElementById('dValue').value),
+        probability: parseInt(document.getElementById('dProbability').value),
+        stage: document.getElementById('dStage').value,
+        contact: document.getElementById('dContact').value || 'Unassigned',
+        closeDate: document.getElementById('dCloseDate').value || '2026-06-30'
+    };
+    deals.unshift(deal);
+    closeModal('deal');
+    e.target.reset();
+
+    if (document.getElementById('view-deals').classList.contains('active')) renderDealsTable();
+    if (document.getElementById('view-pipeline').classList.contains('active')) renderPipeline();
+}
+
+// ═══════════════════════════════════════
+// PIPELINE (KANBAN)
+// ═══════════════════════════════════════
+
+const stages = ['Lead', 'Qualified', 'Proposal', 'Negotiation', 'Won'];
+
+function renderPipeline() {
+    const board = document.getElementById('pipelineBoard');
+    board.innerHTML = stages.map(stage => {
+        const stageDeals = deals.filter(d => d.stage === stage);
+        const totalValue = stageDeals.reduce((sum, d) => sum + d.value, 0);
+        return `
+        <div class="pipeline-column">
+            <div class="pipeline-column-header">
+                <h4>${stage} <span style="color:var(--text-muted);font-weight:400;font-size:12px">- $${totalValue.toLocaleString()}</span></h4>
+                <span class="count">${stageDeals.length}</span>
+            </div>
+            <div class="pipeline-cards" data-stage="${stage}"
+                 ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+                ${stageDeals.map((d, i) => {
+                    const probClass = d.probability >= 60 ? 'high' : d.probability >= 30 ? 'medium' : 'low';
+                    const dealIdx = deals.indexOf(d);
+                    return `<div class="deal-card" draggable="true"
+                                ondragstart="handleDragStart(event, ${dealIdx})"
+                                ondragend="handleDragEnd(event)">
+                        <div class="deal-card-company">${d.company}</div>
+                        <div class="deal-card-value">$${d.value.toLocaleString()}</div>
+                        <div class="deal-card-contact">${d.contact}</div>
+                        <div class="deal-card-footer">
+                            <span class="deal-probability ${probClass}">${d.probability}%</span>
+                            <span class="deal-card-date">${d.closeDate}</span>
+                        </div>
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+let dragDealIndex = null;
+
+function handleDragStart(e, index) {
+    dragDealIndex = index;
+    e.target.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragEnd(e) {
+    e.target.classList.remove('dragging');
+    document.querySelectorAll('.pipeline-cards').forEach(c => c.classList.remove('drag-over'));
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    e.currentTarget.classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+    e.currentTarget.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+    const newStage = e.currentTarget.dataset.stage;
+    if (dragDealIndex !== null && deals[dragDealIndex]) {
+        deals[dragDealIndex].stage = newStage;
+        // update probability based on stage
+        const probMap = { Lead: 15, Qualified: 35, Proposal: 50, Negotiation: 75, Won: 100 };
+        deals[dragDealIndex].probability = probMap[newStage] || deals[dragDealIndex].probability;
+        renderPipeline();
+    }
+    dragDealIndex = null;
+}
+
+// ═══════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════
+
+function openModal(type) {
+    document.getElementById(type + 'Modal').classList.add('show');
+}
+
+function closeModal(type) {
+    document.getElementById(type + 'Modal').classList.remove('show');
+}
+
+// Close modal on backdrop click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', e => {
+        if (e.target === overlay) {
+            overlay.classList.remove('show');
+        }
+    });
+});
+
+// Close modals with Escape
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.show').forEach(m => m.classList.remove('show'));
+    }
+});
+
+// ═══════════════════════════════════════
+// GLOBAL SEARCH
+// ═══════════════════════════════════════
+
+function handleGlobalSearch(query) {
+    if (!query.trim()) return;
+    const q = query.toLowerCase();
+    const contactMatch = contacts.some(c => c.name.toLowerCase().includes(q) || c.company.toLowerCase().includes(q));
+    if (contactMatch) {
+        switchView('contacts');
+        document.getElementById('contactSearch').value = query;
+        filterContacts();
+    }
+}
+
+// ═══════════════════════════════════════
+// CHARTS
+// ═══════════════════════════════════════
+
+function initCharts() {
+    // Revenue Line Chart
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+            labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
+            datasets: [{
+                label: 'Revenue',
+                data: [65000, 72000, 81000, 95000, 110000, 124500],
+                borderColor: '#3B82F6',
+                backgroundColor: 'rgba(59,130,246,0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#3B82F6',
+                pointBorderColor: '#1E293B',
+                pointBorderWidth: 3,
+                pointRadius: 5,
+                pointHoverRadius: 7,
+            }, {
+                label: 'Target',
+                data: [60000, 70000, 80000, 90000, 100000, 115000],
+                borderColor: '#64748B',
+                borderWidth: 2,
+                borderDash: [6, 4],
+                fill: false,
+                tension: 0.4,
+                pointRadius: 0,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    align: 'end',
+                    labels: { color: '#94A3B8', usePointStyle: true, pointStyle: 'circle', padding: 20, font: { size: 12, family: 'Inter' } }
+                },
+                tooltip: {
+                    backgroundColor: '#1E293B',
+                    titleColor: '#F1F5F9',
+                    bodyColor: '#94A3B8',
+                    borderColor: '#334155',
+                    borderWidth: 1,
+                    padding: 12,
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: ctx => ' $' + ctx.parsed.y.toLocaleString()
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { color: 'rgba(51,65,85,0.3)', drawBorder: false },
+                    ticks: { color: '#64748B', font: { size: 12, family: 'Inter' } }
+                },
+                y: {
+                    grid: { color: 'rgba(51,65,85,0.3)', drawBorder: false },
+                    ticks: {
+                        color: '#64748B',
+                        font: { size: 12, family: 'Inter' },
+                        callback: v => '$' + (v / 1000) + 'k'
+                    }
+                }
+            },
+            interaction: { intersect: false, mode: 'index' }
+        }
+    });
+
+    // Deals Donut Chart
+    const dealsCtx = document.getElementById('dealsChart').getContext('2d');
+    new Chart(dealsCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Prospecting', 'Qualification', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'],
+            datasets: [{
+                data: [18, 12, 15, 8, 12, 5],
+                backgroundColor: ['#3B82F6', '#A855F7', '#F59E0B', '#F97316', '#22C55E', '#EF4444'],
+                borderColor: '#1E293B',
+                borderWidth: 3,
+                hoverBorderColor: '#1E293B',
+                hoverOffset: 8,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '65%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#94A3B8',
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        padding: 16,
+                        font: { size: 12, family: 'Inter' }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: '#1E293B',
+                    titleColor: '#F1F5F9',
+                    bodyColor: '#94A3B8',
+                    borderColor: '#334155',
+                    borderWidth: 1,
+                    padding: 12,
+                    cornerRadius: 8,
+                }
+            }
+        }
+    });
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+
+document.addEventListener('DOMContentLoaded', () => {
+    initCharts();
+    renderContacts();
+});
+</script>
+</body>
+</html>
